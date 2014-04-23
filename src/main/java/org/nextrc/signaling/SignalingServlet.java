@@ -10,9 +10,10 @@ import javax.websocket.OnOpen;
 import javax.websocket.Session;
 import javax.websocket.server.ServerEndpoint;
 
-@ServerEndpoint("/signaling")
-public class SignalingServlet {
+import org.springframework.web.socket.server.standard.SpringConfigurator;
 
+@ServerEndpoint(value = "/signaling", configurator = SpringConfigurator.class)
+public class SignalingServlet {
 	private static final Set<Session> sessions = Collections.synchronizedSet(new HashSet<>());
 
 	@OnOpen
