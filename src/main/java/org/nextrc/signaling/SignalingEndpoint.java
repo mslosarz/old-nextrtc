@@ -10,10 +10,19 @@ import javax.websocket.OnOpen;
 import javax.websocket.Session;
 import javax.websocket.server.ServerEndpoint;
 
+import org.nextrc.signaling.codec.MessageDecoder;
+import org.nextrc.signaling.codec.MessageEncoder;
+import org.nextrc.signaling.domain.Message;
+import org.springframework.stereotype.Component;
 import org.springframework.web.socket.server.standard.SpringConfigurator;
 
-@ServerEndpoint(value = "/signaling", configurator = SpringConfigurator.class)
-public class SignalingServlet {
+@Component
+@ServerEndpoint(//
+value = "/signaling",//
+decoders = MessageDecoder.class,//
+encoders = MessageEncoder.class,//
+configurator = SpringConfigurator.class)
+public class SignalingEndpoint {
 	private static final Set<Session> sessions = Collections.synchronizedSet(new HashSet<>());
 
 	@OnOpen
@@ -22,13 +31,13 @@ public class SignalingServlet {
 	}
 
 	@OnMessage
-	public void onMessage(String message, Session session) {
-		for (Session otherSession : sessions) {
-			if (session.equals(otherSession)) {
-				continue;
-			}
-			otherSession.getAsyncRemote().sendText(message);
-		}
+	public void onMessage(Message message, Session session) {
+		// for (Session otherSession : sessions) {
+		// if (session.equals(otherSession)) {
+		// continue;
+		// }
+		// otherSession.getAsyncRemote().sendText(message);
+		// }
 	}
 
 	@OnClose

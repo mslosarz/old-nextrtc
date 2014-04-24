@@ -5,105 +5,6 @@
 <title>Insert title here</title>
 
 <script src="libraries/adapter.js"></script>
-<!-- <script>
-	var endpointURL = 'ws://' + window.location.host + '/nextRTC/signaling';
-	var channel = new WebSocket(endpointURL);
-	var configuration = {
-		'iceServers' : [ {
-			'url' : 'stun:stun.l.google.com:19302'
-		} ]
-	};
-	var pc = new RTCPeerConnection(configuration);
-
-	channel.onmessage = function(event) {
-		var offer = JSON.parse(event.data);
-		// create response
-		if (offer.type === 'offer') {
-			getUserMedia({
-				audio : true,
-				video : true
-			}, function(stream) {
-				pc.addStream(stream);
-				pc.setRemoteDescription(new RTCSessionDescription(offer),
-						function() {
-							pc.createAnswer(function(answer) {
-								pc.setLocalDescription(//
-								new RTCSessionDescription(answer), function() {
-									channel.send(JSON.stringify(answer));
-								}, error);
-							}, error);
-						}, error);
-			}, error);
-		} else {
-			
-		}
-	};
-
-	var error = function(error) {
-		console.log('error ' + error);
-	}
-	var start = function() {
-		getUserMedia({
-			audio : true,
-			video : true
-		}, function(localStream) {
-			pc.addStream(localStream);
-			pc.createOffer(function(offer) {
-				pc.setLocalDescription(new RTCSessionDescription(offer),
-						function() {
-							channel.send(JSON.stringify(offer));
-						}, error);
-			}, error);
-		}, error);
-	};
-</script> 
-var pc1, pc2, offer, answer;
-
-pc1 = new webkitRTCPeerConnection(options);
-pc2 = new webkitRTCPeerConnection(options);
-
-pc1.onicecandidate = function(candidate) {
-  pc2.addIceCandidate(candidate);
-};
-
-pc2.onicecandidate = function(candidate) {
-  pc1.addIceCandidate(candidate);
-};
-
-pc1.createOffer(onOfferCreated, onError);
-
-function onError(err) {
-  window.alert(err.message);
-}
-
-function onOfferCreated(description) {
-  offer = description;
-  pc1.setLocalDescription(offer, onPc1LocalDescriptionSet, onError);
-}
-
-function onPc1LocalDescriptionSet() {
-  // after this function returns, pc1 will start firing icecandidate events
-  pc2.setRemoteDescription(offer, onPc2RemoteDescriptionSet, onError);
-}
-
-function onPc2RemoteDescriptionSet() {
-  pc2.createAnswer(onAnswerCreated, onError);
-}
-
-function onAnswerCreated(description) {
-  answer = description;
-  pc2.setLocalDescription(answer, onPc2LocalDescriptionSet, onError);
-}
-
-function onPc2LocalDescriptionSet() {
-  // after this function returns, you'll start getting icecandidate events on pc2
-  pc1.setRemoteDescription(answer, onPc1RemoteDescriptionSet, onError);
-}
-
-function onPc1RemoteDescriptionSet() {
-  window.alert('Yay, we finished signaling offers and answers');
-}
--->
 </head>
 <body>
 	local:
@@ -126,18 +27,14 @@ function onPc1RemoteDescriptionSet() {
 		var localView = document.getElementById('localVideo');
 		var remoteView = document.getElementById('remoteVideo');
 
-		// run start(true) to initiate a call
 		function start(isCaller) {
 			pc = new RTCPeerConnection(configuration);
 
-			// once remote stream arrives, show it in the remote video element
 			pc.onaddstream = function(evt) {
 				remoteView.src = URL.createObjectURL(evt.stream);
 			};
 
-			// get the local stream, show it in the local video element and send it
 			navigator.getUserMedia({
-				audio : true,
 				video : true
 			}, function(stream) {
 				localView.src = URL.createObjectURL(stream);
@@ -165,8 +62,6 @@ function onPc1RemoteDescriptionSet() {
 			var signal = JSON.parse(evt.data);
 			if (signal.sdp) {
 				pc.setRemoteDescription(new RTCSessionDescription(signal.sdp));
-			} else {
-				pc.addIceCandidate(new RTCIceCandidate(signal.candidate));
 			}
 		};
 
