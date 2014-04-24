@@ -1,5 +1,7 @@
 package org.nextrc.signaling.codec;
 
+import static org.nextrc.signaling.domain.Operations.isValid;
+
 import java.util.Map;
 
 import javax.websocket.DecodeException;
@@ -34,6 +36,8 @@ public class MessageDecoder implements Decoder.Text<Message> {
 	@SuppressWarnings("unchecked")
 	public boolean willDecode(String json) {
 		Map<String, String> object = gson.fromJson(json, Map.class);
-		return object.containsKey("operation") && object.containsKey("content");
+		boolean containsContent = object.containsKey("content");
+		boolean containsConversationId = object.containsKey("conversationId");
+		return isValid(object.get("operation")) && containsContent && containsConversationId;
 	}
 }

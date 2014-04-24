@@ -12,7 +12,9 @@ import javax.websocket.server.ServerEndpoint;
 
 import org.nextrc.signaling.codec.MessageDecoder;
 import org.nextrc.signaling.codec.MessageEncoder;
+import org.nextrc.signaling.domain.ConversationContainer;
 import org.nextrc.signaling.domain.Message;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.server.standard.SpringConfigurator;
 
@@ -25,6 +27,9 @@ configurator = SpringConfigurator.class)
 public class SignalingEndpoint {
 	private static final Set<Session> sessions = Collections.synchronizedSet(new HashSet<>());
 
+	@Autowired
+	private ConversationContainer container;
+
 	@OnOpen
 	public void onOpen(Session session) {
 		sessions.add(session);
@@ -32,12 +37,8 @@ public class SignalingEndpoint {
 
 	@OnMessage
 	public void onMessage(Message message, Session session) {
-		// for (Session otherSession : sessions) {
-		// if (session.equals(otherSession)) {
-		// continue;
-		// }
-		// otherSession.getAsyncRemote().sendText(message);
-		// }
+		message.initSession(session);
+		message.getOperationAsEnum().execute(message, container);
 	}
 
 	@OnClose

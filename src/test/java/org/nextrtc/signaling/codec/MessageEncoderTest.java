@@ -15,7 +15,7 @@ public class MessageEncoderTest {
 	private MessageEncoder encoder = new MessageEncoder();
 
 	@Test
-	public void test1() throws EncodeException {
+	public void shouldEncodeObject() throws EncodeException {
 		// given
 		Message message = Message.create()//
 				.withContent("c")//

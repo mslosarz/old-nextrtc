@@ -1,8 +1,7 @@
 package org.nextrc.signaling.domain;
 
+import javax.websocket.RemoteEndpoint.Async;
 import javax.websocket.Session;
-
-import org.nextrc.signaling.Operations;
 
 import com.google.gson.annotations.Expose;
 
@@ -10,6 +9,10 @@ public class Message {
 
 	@Expose
 	private String operation;
+
+	@Expose
+	private String conversationId;
+
 	@Expose
 	private String content;
 
@@ -19,12 +22,31 @@ public class Message {
 		return operation;
 	}
 
+	public Operations getOperationAsEnum() {
+		return Operations.valueOf(operation);
+	}
+
+	public String getConversationId() {
+		return conversationId;
+	}
+
 	public String getContent() {
 		return content;
 	}
 
 	public Session getSession() {
 		return session;
+	}
+
+	public Async getAsyncRemote() {
+		assert (session != null);
+		return session.getAsyncRemote();
+	}
+
+	public void initSession(Session session) {
+		if (this.session == null) {
+			this.session = session;
+		}
 	}
 
 	public void send() {
@@ -57,6 +79,11 @@ public class Message {
 			return this;
 		}
 
+		public MessageBuilder withConversationId(String conversationId) {
+			item.conversationId = conversationId;
+			return this;
+		}
+
 		public MessageBuilder withSession(Session session) {
 			item.session = session;
 			return this;
@@ -64,6 +91,11 @@ public class Message {
 
 		public MessageBuilder withSessionFrom(Message message) {
 			item.session = message.session;
+			return this;
+		}
+
+		public MessageBuilder withSessionFrom(Member member) {
+			item.session = member.getSession();
 			return this;
 		}
 
