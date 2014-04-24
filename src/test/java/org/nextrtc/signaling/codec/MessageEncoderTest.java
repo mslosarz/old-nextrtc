@@ -19,7 +19,7 @@ public class MessageEncoderTest {
 		// given
 		Message message = Message.create()//
 				.withContent("c")//
-				.withOperation("o")//
+				.withSignal("o")//
 				.build();
 
 		// when
@@ -28,7 +28,7 @@ public class MessageEncoderTest {
 		// then
 		assertNotNull(result);
 		assertThat(result, containsString("\"content\":\"c\""));
-		assertThat(result, containsString("\"operation\":\"o\""));
+		assertThat(result, containsString("\"signal\":\"o\""));
 	}
 
 }

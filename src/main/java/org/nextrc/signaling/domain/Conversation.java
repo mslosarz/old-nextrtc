@@ -1,8 +1,8 @@
 package org.nextrc.signaling.domain;
 
 import static java.util.Collections.synchronizedList;
-import static org.nextrc.signaling.domain.Operations.mediaAnswer;
-import static org.nextrc.signaling.domain.Operations.mediaOffer;
+import static org.nextrc.signaling.domain.Signals.mediaAnswer;
+import static org.nextrc.signaling.domain.Signals.mediaOffer;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -22,12 +22,12 @@ public class Conversation {
 		for (Member member : members) {
 			Message.create()//
 					.withSessionFrom(joining)//
-					.withOperation(mediaOffer)//
+					.withSignal(mediaOffer)//
 					.withContent(member.getMediaDescription())//
 					.build().send();
 			Message.create()//
 					.withSessionFrom(member)//
-					.withOperation(mediaAnswer)//
+					.withSignal(mediaAnswer)//
 					.withContent(joining.getMediaDescription())//
 					.build().send();
 		}

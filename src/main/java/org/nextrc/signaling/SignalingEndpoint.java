@@ -38,7 +38,7 @@ public class SignalingEndpoint {
 	@OnMessage
 	public void onMessage(Message message, Session session) {
 		message.initSession(session);
-		message.getOperationAsEnum().execute(message, container);
+		message.getSignalAsEnum().execute(message, container);
 	}
 
 	@OnClose

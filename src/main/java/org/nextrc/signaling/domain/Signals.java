@@ -1,6 +1,6 @@
 package org.nextrc.signaling.domain;
 
-public enum Operations {
+public enum Signals {
 	// incoming
 	newConversation {
 		@Override
@@ -23,9 +23,9 @@ public enum Operations {
 	public void execute(Message message, ConversationContainer container) {
 	}
 
-	public static boolean isValid(String operation) {
-		for (Operations op : values()) {
-			if (op.name().equals(operation)) {
+	public static boolean isValid(String incoming) {
+		for (Signals signal : values()) {
+			if (signal.name().equals(incoming)) {
 				return true;
 			}
 		}

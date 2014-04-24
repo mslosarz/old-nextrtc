@@ -8,8 +8,8 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.nextrc.signaling.domain.Message.create;
-import static org.nextrc.signaling.domain.Operations.conversationCreated;
-import static org.nextrc.signaling.domain.Operations.newConversation;
+import static org.nextrc.signaling.domain.Signals.conversationCreated;
+import static org.nextrc.signaling.domain.Signals.newConversation;
 
 import javax.websocket.RemoteEndpoint.Async;
 import javax.websocket.Session;
@@ -42,7 +42,7 @@ public class ConversationContainerTest {
 
 		// then
 		assertNotNull(response);
-		assertThat(response.getOperation(), equalTo(conversationCreated.name()));
+		assertThat(response.getSignal(), equalTo(conversationCreated.name()));
 		assertNotNull("Conversation ID has to be returned", response.getContent());
 		verify(async).sendObject(Mockito.anyObject());
 	}
@@ -81,7 +81,7 @@ public class ConversationContainerTest {
 		Async async = mock(Async.class);
 		when(session.getAsyncRemote()).thenReturn(async);
 		return create()//
-				.withOperation(newConversation)//
+				.withSignal(newConversation)//
 				.withContent("sdp")//
 				.withSession(session)//
 				.build();

@@ -4,10 +4,10 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.nextrc.signaling.domain.Message.create;
-import static org.nextrc.signaling.domain.Operations.joinConversation;
-import static org.nextrc.signaling.domain.Operations.mediaAnswer;
-import static org.nextrc.signaling.domain.Operations.mediaOffer;
-import static org.nextrc.signaling.domain.Operations.newConversation;
+import static org.nextrc.signaling.domain.Signals.joinConversation;
+import static org.nextrc.signaling.domain.Signals.mediaAnswer;
+import static org.nextrc.signaling.domain.Signals.mediaOffer;
+import static org.nextrc.signaling.domain.Signals.newConversation;
 
 import javax.websocket.RemoteEndpoint.Async;
 import javax.websocket.Session;
@@ -18,7 +18,7 @@ import org.junit.Test;
 import org.mockito.Mockito;
 import org.nextrc.signaling.domain.Conversation;
 import org.nextrc.signaling.domain.Message;
-import org.nextrc.signaling.domain.Operations;
+import org.nextrc.signaling.domain.Signals;
 
 public class ConversationTest {
 
@@ -37,18 +37,18 @@ public class ConversationTest {
 
 		// then
 
-		verify(ownerRemote).sendObject(Mockito.argThat(new MatchOperationAndContent(mediaAnswer, "join")));
-		verify(joiningRemote).sendObject(Mockito.argThat(new MatchOperationAndContent(mediaOffer, "owner")));
+		verify(ownerRemote).sendObject(Mockito.argThat(new MatchSignalAndContent(mediaAnswer, "join")));
+		verify(joiningRemote).sendObject(Mockito.argThat(new MatchSignalAndContent(mediaOffer, "owner")));
 
 	}
 
-	private Message createConversationRequest(Operations op, String content) {
+	private Message createConversationRequest(Signals op, String content) {
 		Session member = mock(Session.class);
 		Async async = mock(Async.class);
 		when(member.getAsyncRemote()).thenReturn(async);
 
 		Message request = create()//
-				.withOperation(op)//
+				.withSignal(op)//
 				.withContent(content)//
 				.withSession(member)//
 				.build();
@@ -57,19 +57,19 @@ public class ConversationTest {
 
 }
 
-class MatchOperationAndContent extends BaseMatcher<Message> {
+class MatchSignalAndContent extends BaseMatcher<Message> {
 	private String content;
-	private Operations operation;
+	private Signals signal;
 
-	public MatchOperationAndContent(Operations operation, String content) {
+	public MatchSignalAndContent(Signals signal, String content) {
 		this.content = content;
-		this.operation = operation;
+		this.signal = signal;
 	}
 
 	@Override
 	public boolean matches(Object object) {
 		Message msg = (Message) object;
-		return msg.getContent().equals(content) && msg.getOperationAsEnum() == operation;
+		return msg.getContent().equals(content) && msg.getSignalAsEnum() == signal;
 	}
 
 	@Override

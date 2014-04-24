@@ -8,7 +8,7 @@ import com.google.gson.annotations.Expose;
 public class Message {
 
 	@Expose
-	private String operation;
+	private String signal;
 
 	@Expose
 	private String conversationId;
@@ -18,12 +18,12 @@ public class Message {
 
 	private Session session;
 
-	public String getOperation() {
-		return operation;
+	public String getSignal() {
+		return signal;
 	}
 
-	public Operations getOperationAsEnum() {
-		return Operations.valueOf(operation);
+	public Signals getSignalAsEnum() {
+		return Signals.valueOf(signal);
 	}
 
 	public String getConversationId() {
@@ -69,13 +69,13 @@ public class Message {
 			return this;
 		}
 
-		public MessageBuilder withOperation(String operation) {
-			item.operation = operation;
+		public MessageBuilder withSignal(String signal) {
+			item.signal = signal;
 			return this;
 		}
 
-		public MessageBuilder withOperation(Operations operation) {
-			item.operation = operation.name();
+		public MessageBuilder withSignal(Signals signal) {
+			item.signal = signal.name();
 			return this;
 		}
 

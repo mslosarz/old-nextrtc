@@ -1,7 +1,7 @@
 package org.nextrc.signaling.domain;
 
 import static org.nextrc.signaling.domain.Message.create;
-import static org.nextrc.signaling.domain.Operations.conversationCreated;
+import static org.nextrc.signaling.domain.Signals.conversationCreated;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -28,7 +28,7 @@ public class ConversationContainer {
 		conversations.put(conversationId, new Conversation(newOne));
 
 		Message result = create()//
-				.withOperation(conversationCreated)//
+				.withSignal(conversationCreated)//
 				.withContent(conversationId)//
 				.withSessionFrom(newOne)//
 				.build();

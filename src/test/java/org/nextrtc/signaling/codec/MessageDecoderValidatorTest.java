@@ -20,13 +20,13 @@ public class MessageDecoderValidatorTest {
 	@Parameters(name = "{1} -> {0}")
 	public static Collection<Object[]> data() {
 		return Arrays.asList(new Object[][] {//
-						{ "{'operation' : 'newConversation', 'content' : 'empty', 'conversationId' : 'id'}", true },//
-						{ "{'operation' : 'newConversation', 'conversationId' : 'id', 'content' : {'adsad':'adsd'} }",
+						{ "{'signal' : 'newConversation', 'content' : 'empty', 'conversationId' : 'id'}", true },//
+						{ "{'signal' : 'newConversation', 'conversationId' : 'id', 'content' : {'adsad':'adsd'} }",
 								true },//
-						{ "{operation : 'newConversation', 'conversationId' : 'id', content : null }", true },//
-						{ "{operation : 'some', 'conversationId' : 'id', content : null }", false },//
-						{ "{\"operation\" : newConversation, \"content\" : fish , 'conversationId' : id}", true },//
-						{ "{'operation' : 'some', 'conversationId' : 'id'}", false },//
+						{ "{signal : 'newConversation', 'conversationId' : 'id', content : null }", true },//
+						{ "{signal : 'some', 'conversationId' : 'id', content : null }", false },//
+						{ "{\"signal\" : newConversation, \"content\" : fish , 'conversationId' : id}", true },//
+						{ "{'signal' : 'some', 'conversationId' : 'id'}", false },//
 						{ "{'content' : 'empty'}", false },//
 				});
 	}

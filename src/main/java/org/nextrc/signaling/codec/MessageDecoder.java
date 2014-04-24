@@ -1,6 +1,6 @@
 package org.nextrc.signaling.codec;
 
-import static org.nextrc.signaling.domain.Operations.isValid;
+import static org.nextrc.signaling.domain.Signals.isValid;
 
 import java.util.Map;
 
@@ -38,6 +38,6 @@ public class MessageDecoder implements Decoder.Text<Message> {
 		Map<String, String> object = gson.fromJson(json, Map.class);
 		boolean containsContent = object.containsKey("content");
 		boolean containsConversationId = object.containsKey("conversationId");
-		return isValid(object.get("operation")) && containsContent && containsConversationId;
+		return isValid(object.get("signal")) && containsContent && containsConversationId;
 	}
 }

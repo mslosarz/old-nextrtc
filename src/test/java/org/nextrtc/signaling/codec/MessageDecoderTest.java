@@ -17,14 +17,15 @@ public class MessageDecoderTest {
 	@Test
 	public void shouldParseValidObject() throws DecodeException {
 		// given
-		String validJson = "{'operation' : 'some', 'content' : 'empty'}";
+		String validJson = "{'signal' : 'some', 'content' : 'empty', 'conversationId' : 'aaa'}";
 
 		// when
 		Message result = decoder.decode(validJson);
 
 		// then
 		assertNotNull(result);
-		assertThat(result.getOperation(), equalTo("some"));
+		assertThat(result.getSignal(), equalTo("some"));
 		assertThat(result.getContent(), equalTo("empty"));
+		assertThat(result.getConversationId(), equalTo("aaa"));
 	}
 }
