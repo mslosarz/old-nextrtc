@@ -3,11 +3,11 @@ package org.nextrtc.signaling.domain;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static org.nextrc.signaling.domain.Message.create;
-import static org.nextrc.signaling.domain.Signals.joinConversation;
-import static org.nextrc.signaling.domain.Signals.mediaAnswer;
-import static org.nextrc.signaling.domain.Signals.mediaOffer;
-import static org.nextrc.signaling.domain.Signals.newConversation;
+import static org.nextrtc.signaling.domain.Message.create;
+import static org.nextrtc.signaling.domain.Signals.joinConversation;
+import static org.nextrtc.signaling.domain.Signals.mediaAnswer;
+import static org.nextrtc.signaling.domain.Signals.mediaOffer;
+import static org.nextrtc.signaling.domain.Signals.newConversation;
 
 import javax.websocket.RemoteEndpoint.Async;
 import javax.websocket.Session;
@@ -16,9 +16,9 @@ import org.hamcrest.BaseMatcher;
 import org.hamcrest.Description;
 import org.junit.Test;
 import org.mockito.Mockito;
-import org.nextrc.signaling.domain.Conversation;
-import org.nextrc.signaling.domain.Message;
-import org.nextrc.signaling.domain.Signals;
+import org.nextrtc.signaling.domain.Conversation;
+import org.nextrtc.signaling.domain.Message;
+import org.nextrtc.signaling.domain.Signals;
 
 public class ConversationTest {
 

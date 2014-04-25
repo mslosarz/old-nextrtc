@@ -1,4 +1,4 @@
-package org.nextrc.signaling.domain;
+package org.nextrtc.signaling.domain;
 
 import javax.websocket.Session;
 

@@ -1,8 +1,8 @@
-package org.nextrc.signaling.domain;
+package org.nextrtc.signaling.domain;
 
 import static java.util.Collections.synchronizedList;
-import static org.nextrc.signaling.domain.Signals.mediaAnswer;
-import static org.nextrc.signaling.domain.Signals.mediaOffer;
+import static org.nextrtc.signaling.domain.Signals.mediaAnswer;
+import static org.nextrtc.signaling.domain.Signals.mediaOffer;
 
 import java.util.LinkedList;
 import java.util.List;

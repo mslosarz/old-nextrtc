@@ -1,4 +1,4 @@
-package org.nextrc.signaling.domain;
+package org.nextrtc.signaling.domain;
 
 public enum Signals {
 	// incoming

@@ -1,7 +1,7 @@
-package org.nextrc.signaling.domain;
+package org.nextrtc.signaling.domain;
 
-import static org.nextrc.signaling.domain.Message.create;
-import static org.nextrc.signaling.domain.Signals.conversationCreated;
+import static org.nextrtc.signaling.domain.Message.create;
+import static org.nextrtc.signaling.domain.Signals.conversationCreated;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -29,10 +29,9 @@ public class ConversationContainer {
 
 		Message result = create()//
 				.withSignal(conversationCreated)//
-				.withContent(conversationId)//
+				.withConversationId(conversationId)//
 				.withSessionFrom(newOne)//
 				.build();
-
 		result.send();
 		return result;
 	}

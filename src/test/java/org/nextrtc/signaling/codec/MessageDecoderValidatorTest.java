@@ -10,7 +10,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
-import org.nextrc.signaling.codec.MessageDecoder;
+import org.nextrtc.signaling.codec.MessageDecoder;
 
 @RunWith(Parameterized.class)
 public class MessageDecoderValidatorTest {

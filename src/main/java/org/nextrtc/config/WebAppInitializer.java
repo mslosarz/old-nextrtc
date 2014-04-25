@@ -1,4 +1,4 @@
-package org.nextrc.config;
+package org.nextrtc.config;
 
 import javax.servlet.Filter;
 

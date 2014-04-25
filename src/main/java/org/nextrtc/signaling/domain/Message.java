@@ -1,4 +1,4 @@
-package org.nextrc.signaling.domain;
+package org.nextrtc.signaling.domain;
 
 import javax.websocket.RemoteEndpoint.Async;
 import javax.websocket.Session;
@@ -43,10 +43,8 @@ public class Message {
 		return session.getAsyncRemote();
 	}
 
-	public void initSession(Session session) {
-		if (this.session == null) {
-			this.session = session;
-		}
+	public void setSession(Session session) {
+		this.session = session;
 	}
 
 	public void send() {

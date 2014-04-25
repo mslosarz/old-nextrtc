@@ -7,9 +7,9 @@ import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static org.nextrc.signaling.domain.Message.create;
-import static org.nextrc.signaling.domain.Signals.conversationCreated;
-import static org.nextrc.signaling.domain.Signals.newConversation;
+import static org.nextrtc.signaling.domain.Message.create;
+import static org.nextrtc.signaling.domain.Signals.conversationCreated;
+import static org.nextrtc.signaling.domain.Signals.newConversation;
 
 import javax.websocket.RemoteEndpoint.Async;
 import javax.websocket.Session;
@@ -17,9 +17,9 @@ import javax.websocket.Session;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
-import org.nextrc.signaling.domain.Conversation;
-import org.nextrc.signaling.domain.ConversationContainer;
-import org.nextrc.signaling.domain.Message;
+import org.nextrtc.signaling.domain.Conversation;
+import org.nextrtc.signaling.domain.ConversationContainer;
+import org.nextrtc.signaling.domain.Message;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -43,14 +43,14 @@ public class ConversationContainerTest {
 		// then
 		assertNotNull(response);
 		assertThat(response.getSignal(), equalTo(conversationCreated.name()));
-		assertNotNull("Conversation ID has to be returned", response.getContent());
+		assertNotNull("Conversation ID has to be returned", response.getConversationId());
 		verify(async).sendObject(Mockito.anyObject());
 	}
 
 	@Test
 	public void shouldAllowToFindConversationByID() {
 		// given
-		String conversationId = container.createNewConversation(createConversationRequest()).getContent();
+		String conversationId = container.createNewConversation(createConversationRequest()).getConversationId();
 
 		// when
 		Conversation conversation = container.findConversationById(conversationId);
@@ -65,7 +65,7 @@ public class ConversationContainerTest {
 		Message request = createConversationRequest();
 		Session sessionToRemove = request.getSession();
 
-		String conversationId = container.createNewConversation(request).getContent();
+		String conversationId = container.createNewConversation(request).getConversationId();
 		Conversation conversation = container.findConversationById(conversationId);
 		assertThat(conversation.members(), is(1));
 

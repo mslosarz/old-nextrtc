@@ -12,8 +12,16 @@
 	<br> remote:
 	<video id="remoteVideo" autoplay></video>
 	<button onclick="start(true);">Start</button>
+	<br>
+	<div id="channelName"></div>
 
 	<script>
+		function Message(signal, conversationId, content) {
+			this.signal = signal;
+			this.conversationId = conversationId;
+			this.content = content;
+		}
+
 		navigator.getUserMedia = getUserMedia;
 		var endpointURL = 'ws://' + window.location.host + '/nextRTC/signaling';
 		var configuration = {
@@ -23,6 +31,7 @@
 		};
 		var signalingChannel = new WebSocket(endpointURL);
 		var pc;
+		var roomCreated = false;
 		// on ready
 		var localView = document.getElementById('localVideo');
 		var remoteView = document.getElementById('remoteVideo');
@@ -47,10 +56,19 @@
 				}
 
 				function gotDescription(desc) {
+					if (!roomCreated && isCaller) {
+						console.log(JSON.stringify(
+								new Message('newConversation', null, desc.sdp)
+						));
+						signalingChannel.send(JSON.stringify(
+								new Message('newConversation', null, desc.sdp)
+								));
+						roomCreated = true;
+					}
 					pc.setLocalDescription(desc);
-					signalingChannel.send(JSON.stringify({
-						'sdp' : desc
-					}));
+					//signalingChannel.send(JSON.stringify({
+					//	'sdp' : desc
+					//}));
 				}
 			}, error);
 		}
@@ -60,9 +78,20 @@
 				start(false);
 
 			var signal = JSON.parse(evt.data);
-			if (signal.sdp) {
-				pc.setRemoteDescription(new RTCSessionDescription(signal.sdp));
+			if (signal.signal == 'conversationCreated') {
+				document.getElementById('channelName').appendChild(
+						signal.conversationId);
 			}
+			if (signal.signal == 'mediaOffer'){
+				
+			}
+			if (signal.signal == 'mediaAnswer'){
+				
+			}
+				//if (signal.sdp) {
+				//	pc.setRemoteDescription(new RTCSessionDescription(
+				//			signal.sdp));
+				//}
 		};
 
 		var error = function(error) {

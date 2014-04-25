@@ -7,8 +7,8 @@ import static org.junit.Assert.assertThat;
 import javax.websocket.DecodeException;
 
 import org.junit.Test;
-import org.nextrc.signaling.codec.MessageDecoder;
-import org.nextrc.signaling.domain.Message;
+import org.nextrtc.signaling.codec.MessageDecoder;
+import org.nextrtc.signaling.domain.Message;
 
 public class MessageDecoderTest {
 
