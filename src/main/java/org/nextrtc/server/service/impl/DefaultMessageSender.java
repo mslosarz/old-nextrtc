@@ -1,0 +1,25 @@
+package org.nextrtc.server.service.impl;
+
+import javax.websocket.Session;
+
+import org.nextrtc.server.domain.Message;
+import org.nextrtc.server.domain.SenderRequest;
+import org.nextrtc.server.service.MessageSender;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
+
+@Component
+@Scope("singleton")
+public class DefaultMessageSender implements MessageSender {
+
+	@Override
+	public void send(SenderRequest request) {
+		Message message = request.getMessage();
+		for (Session session : request.getSessions()) {
+			session.getAsyncRemote().sendObject(message);
+
+		}
+
+	}
+
+}
