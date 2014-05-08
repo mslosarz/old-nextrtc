@@ -17,7 +17,7 @@ public enum DefaultSignals implements Signal {
 	 * 
 	 * {<br>
 	 * 'signal':'create',<br>
-	 * 'member':{'id':null, 'nick':'Alice'},<br>
+	 * 'member':{'id':null, 'name':'Alice'},<br>
 	 * 'content':null<br>
 	 * }<br>
 	 * 
@@ -37,7 +37,7 @@ public enum DefaultSignals implements Signal {
 		public SignalResponse execute(Member member, Message message, RequestContext requestContext) {
 			logRequest(message, member);
 
-			updateMemberNick(member, message, requestContext);
+			updateMemberName(member, message, requestContext);
 
 			Conversation conversation = requestContext.getConversationDao().create();
 
@@ -57,7 +57,7 @@ public enum DefaultSignals implements Signal {
 	 * 
 	 * {<br>
 	 * 'signal':'join',<br>
-	 * 'member':{'id':null, 'nick':'Bob'},<br>
+	 * 'member':{'id':null, 'name':'Bob'},<br>
 	 * 'content':'conversation-id'<br>
 	 * }<br>
 	 * 
@@ -67,7 +67,7 @@ public enum DefaultSignals implements Signal {
 	 * 
 	 * {<br>
 	 * 'signal':'offerRequest',<br>
-	 * 'member':{'id':'bob-id', 'nick':'Bob'},<br>
+	 * 'member':{'id':'bob-id', 'name':'Bob'},<br>
 	 * 'content':null<br>
 	 * }<br>
 	 * 
@@ -77,7 +77,7 @@ public enum DefaultSignals implements Signal {
 		public SignalResponse execute(Member member, Message message, RequestContext requestContext) {
 			logRequest(message, member);
 
-			updateMemberNick(member, message, requestContext);
+			updateMemberName(member, message, requestContext);
 
 			Conversation conversation = fetchConversation(message, requestContext);
 
@@ -93,7 +93,7 @@ public enum DefaultSignals implements Signal {
 	 * 
 	 * {<br>
 	 * 'signal':'offerResponse',<br>
-	 * 'member':{'id':'bob-id', 'nick':null},<br>
+	 * 'member':{'id':'bob-id', 'name':null},<br>
 	 * 'content':'alice sdp local media description'<br>
 	 * }<br>
 	 * 
@@ -103,7 +103,7 @@ public enum DefaultSignals implements Signal {
 	 * 
 	 * {<br>
 	 * 'signal':'answerRequest',<br>
-	 * 'member':{'id':'alice-id', 'nick':'Alice'},<br>
+	 * 'member':{'id':'alice-id', 'name':'Alice'},<br>
 	 * 'content':'alice sdp local media description'<br>
 	 * }<br>
 	 * 
@@ -127,7 +127,7 @@ public enum DefaultSignals implements Signal {
 	 * 
 	 * {<br>
 	 * 'signal':'answerResponse',<br>
-	 * 'member':{'id':'alice-id', 'nick':null},<br>
+	 * 'member':{'id':'alice-id', 'name':null},<br>
 	 * 'content':'bob sdp local media description'<br>
 	 * }<br>
 	 * 
@@ -135,7 +135,7 @@ public enum DefaultSignals implements Signal {
 	 * 
 	 * {<br>
 	 * 'signal':'finalize',<br>
-	 * 'member':{'id':'bob-id', 'nick':null},<br>
+	 * 'member':{'id':'bob-id', 'name':null},<br>
 	 * 'content':'bob sdp local media description'<br>
 	 * }<br>
 	 * 
@@ -190,7 +190,7 @@ public enum DefaultSignals implements Signal {
 		return result;
 	}
 
-	private static void updateMemberNick(Member member, Message message, RequestContext requestContext) {
+	private static void updateMemberName(Member member, Message message, RequestContext requestContext) {
 		requestContext.getMemberDao().updateNick(member, message.getMemberName());
 	}
 

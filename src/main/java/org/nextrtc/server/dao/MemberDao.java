@@ -6,6 +6,8 @@ public interface MemberDao {
 
 	Member create();
 
+	Member findBy(String id);
+
 	void remove(Member member);
 
 	void updateNick(Member member, String nick);

@@ -33,11 +33,11 @@ public class Message {
 	}
 
 	public String getMemberName() {
-		return member.getName();
+		return member != null ? member.getName() : "";
 	}
 
 	public String getMemberId() {
-		return member.getId();
+		return member != null ? member.getId() : "";
 	}
 
 	@Override
@@ -58,7 +58,7 @@ public class Message {
 
 		public MessageMember(Member member) {
 			this.id = member.getId();
-			this.name = member.getNick();
+			this.name = member.getName();
 		}
 
 		public String getId() {

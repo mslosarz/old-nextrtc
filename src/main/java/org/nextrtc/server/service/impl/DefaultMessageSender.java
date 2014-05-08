@@ -14,12 +14,12 @@ public class DefaultMessageSender implements MessageSender {
 
 	@Override
 	public void send(SenderRequest request) {
-		Message message = request.getMessage();
-		for (Session session : request.getSessions()) {
-			session.getAsyncRemote().sendObject(message);
-
+		if (request != null) {
+			Message message = request.getMessage();
+			for (Session session : request.getSessions()) {
+				session.getAsyncRemote().sendObject(message);
+			}
 		}
-
 	}
 
 }

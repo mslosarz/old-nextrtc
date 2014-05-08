@@ -12,6 +12,9 @@ public class SenderRequest {
 	private Set<Session> sessions = new HashSet<>();
 
 	public SenderRequest(Message message) {
+		if (message == null) {
+			throw new IllegalArgumentException("Message has to be set!");
+		}
 		this.message = message;
 	}
 
@@ -24,7 +27,9 @@ public class SenderRequest {
 	}
 
 	public void add(Session session) {
-		sessions.add(session);
+		if (session != null) {
+			sessions.add(session);
+		}
 	}
 
 }

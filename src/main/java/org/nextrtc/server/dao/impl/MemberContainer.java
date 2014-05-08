@@ -24,6 +24,16 @@ public class MemberContainer implements MemberDao {
 	}
 
 	@Override
+	public Member findBy(String id) {
+		for (Member member : defaultMembers) {
+			if (member.getId().equals(id)) {
+				return member;
+			}
+		}
+		return null;
+	}
+
+	@Override
 	public void remove(Member member) {
 		defaultMembers.remove(member);
 	}
@@ -32,8 +42,9 @@ public class MemberContainer implements MemberDao {
 	public void updateNick(Member member, String nick) {
 		if (defaultMembers.contains(member)) {
 			defaultMembers.remove(member);
-			member.setNick(nick);
+			member.setName(nick);
 			defaultMembers.add(member);
 		}
 	}
+
 }

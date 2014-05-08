@@ -6,15 +6,15 @@ public class DefaultMember implements Member {
 
 	private String id;
 
-	private String nick;
+	private String name;
 
 	public DefaultMember() {
 		this.id = UUID.randomUUID().toString();
 	}
 
-	public DefaultMember(String id, String nick) {
+	public DefaultMember(String id, String name) {
 		this.id = id;
-		this.nick = nick;
+		this.name = name;
 	}
 
 	@Override
@@ -23,18 +23,18 @@ public class DefaultMember implements Member {
 	}
 
 	@Override
-	public String getNick() {
-		return nick;
+	public String getName() {
+		return name;
 	}
 
 	@Override
-	public void setNick(String nick) {
-		this.nick = nick;
+	public void setName(String name) {
+		this.name = name;
 	}
 
 	@Override
 	public String toString() {
-		return "Member (" + id + " " + nick + ")";
+		return "Member (" + id + " " + name + ")";
 	}
 
 	@Override

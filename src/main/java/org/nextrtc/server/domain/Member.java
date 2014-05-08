@@ -2,10 +2,10 @@ package org.nextrtc.server.domain;
 
 public interface Member {
 
-	public abstract String getId();
+	String getId();
 
-	public abstract String getNick();
+	String getName();
 
-	public abstract void setNick(String nick);
+	void setName(String nick);
 
 }
