@@ -1,4 +1,4 @@
-package org.nextrtc.signaling.codec;
+package org.nextrtc.server.codec;
 
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
@@ -10,7 +10,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
-import org.nextrtc.signaling.codec.MessageDecoder;
 
 @RunWith(Parameterized.class)
 public class MessageDecoderValidatorTest {
@@ -20,13 +19,12 @@ public class MessageDecoderValidatorTest {
 	@Parameters(name = "{1} -> {0}")
 	public static Collection<Object[]> data() {
 		return Arrays.asList(new Object[][] {//
-						{ "{'signal' : 'newConversation', 'content' : 'empty', 'conversationId' : 'id'}", true },//
-						{ "{'signal' : 'newConversation', 'conversationId' : 'id', 'content' : {'adsad':'adsd'} }",
-								true },//
-						{ "{signal : 'newConversation', 'conversationId' : 'id', content : null }", true },//
-						{ "{signal : 'some', 'conversationId' : 'id', content : null }", false },//
-						{ "{\"signal\" : newConversation, \"content\" : fish , 'conversationId' : id}", true },//
-						{ "{'signal' : 'some', 'conversationId' : 'id'}", false },//
+						{ "{'signal' : 'join', 'content' : 'empty', 'member' : {id:null, name:Alice}}", true },//
+						{ "{'signal' : 'create', 'content' : null, 'member' : {'id':null, 'name':Bob} }", true },//
+						{ "{ signal : 'answerResponse', 'member' : {}, content : null }", true },//
+						{ "{ signal : 'wrong', 'member' : {}, content : null }", false },//
+						{ "{\"signal\" : join, \"content\" : fish , 'member' : null}", false },//
+						{ "{'signal' : 'created', member : {} }", true },//
 						{ "{'content' : 'empty'}", false },//
 				});
 	}
