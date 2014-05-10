@@ -34,19 +34,14 @@ public enum DefaultSignals implements Signal {
 	 */
 	create {
 		@Override
-		public SignalResponse execute(Member member, Message message, RequestContext requestContext) {
-			logRequest(message, member);
+		public SignalResponse execute(Member owner, Message message, RequestContext requestContext) {
+			logRequest(message, owner);
 
-			updateMemberName(member, message, requestContext);
+			updateMemberName(owner, message, requestContext);
 
 			Conversation conversation = requestContext.getConversationDao().create();
 
-			Message response = Message//
-					.createWith(created)//
-					.withContent(conversation.getId())//
-					.build();//
-
-			return createSignalResponse(response, member);
+			return conversation.joinOwner(owner);
 		}
 	},
 
@@ -162,6 +157,17 @@ public enum DefaultSignals implements Signal {
 
 	finalize,
 
+	/**
+	 * Signal send to all member when someone leave the conversation<br>
+	 * server -> All member<br>
+	 * 
+	 * {<br>
+	 * 'signal':'left',<br>
+	 * 'member':{'id':'bob-id', 'name':null},<br>
+	 * 'content':null<br>
+	 * }<br>
+	 */
+	left,
 	;
 
 	@Override
@@ -180,14 +186,6 @@ public enum DefaultSignals implements Signal {
 
 	protected void logRequest(Message message, Member member) {
 		log.debug(String.format("Executing: %s (%s) for %s", this.name(), message, member));
-	}
-
-	private static SignalResponse createSignalResponse(Message response, Member... members) {
-		SignalResponse result = new SignalResponse(response);
-		for (Member member : members) {
-			result.add(member);
-		}
-		return result;
 	}
 
 	private static void updateMemberName(Member member, Message message, RequestContext requestContext) {

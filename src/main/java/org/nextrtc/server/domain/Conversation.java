@@ -5,6 +5,8 @@ public interface Conversation {
 
 	String getId();
 
+	SignalResponse joinOwner(Member owner);
+
 	SignalResponse join(Member member);
 
 	SignalResponse routeOffer(Member from, Message offer);
@@ -15,6 +17,6 @@ public interface Conversation {
 
 	boolean has(Member member);
 
-	void disconnect(Member member);
+	SignalResponse disconnect(Member member);
 
 }

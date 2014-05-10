@@ -1,19 +1,21 @@
 package org.nextrtc.server.domain;
 
-import static java.util.Collections.synchronizedList;
+import static java.util.Collections.synchronizedSet;
 import static org.nextrtc.server.domain.signal.DefaultSignals.answerRequest;
+import static org.nextrtc.server.domain.signal.DefaultSignals.created;
 import static org.nextrtc.server.domain.signal.DefaultSignals.finalize;
+import static org.nextrtc.server.domain.signal.DefaultSignals.left;
 import static org.nextrtc.server.domain.signal.DefaultSignals.offerRequest;
 
-import java.util.LinkedList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.UUID;
 
 import org.nextrtc.server.exception.MemberNotFoundException;
 
 public class DefaultConversation implements Conversation {
 
-	private List<Member> members = synchronizedList(new LinkedList<Member>());
+	private Set<Member> members = synchronizedSet(new HashSet<Member>());
 	private String id;
 
 	public DefaultConversation() {
@@ -26,8 +28,25 @@ public class DefaultConversation implements Conversation {
 		return signalResponse;
 	}
 
-	public void disconnect(Member member) {
-		members.remove(member);
+	@Override
+	public SignalResponse disconnect(Member leaving) {
+		members.remove(leaving);
+		return broadcast(Message//
+				.createWith(left)//
+				.member(leaving)//
+				.build());
+	}
+
+	@Override
+	public SignalResponse joinOwner(Member owner) {
+		members.add(owner);
+
+		Message response = Message//
+				.createWith(created)//
+				.withContent(id)//
+				.build();//
+
+		return broadcast(response);
 	}
 
 	public SignalResponse join(Member member) {
