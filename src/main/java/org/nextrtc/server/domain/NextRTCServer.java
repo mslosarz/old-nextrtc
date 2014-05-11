@@ -1,5 +1,7 @@
 package org.nextrtc.server.domain;
 
+import static org.nextrtc.server.domain.signal.DefaultSignals.left;
+
 import java.io.IOException;
 
 import javax.websocket.Session;
@@ -7,6 +9,7 @@ import javax.websocket.Session;
 import org.apache.log4j.Logger;
 import org.nextrtc.server.dao.ConversationDao;
 import org.nextrtc.server.dao.MemberDao;
+import org.nextrtc.server.exception.MemberNotFoundException;
 import org.nextrtc.server.exception.SessionCloseException;
 import org.nextrtc.server.service.MessageSender;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,7 +34,7 @@ public class NextRTCServer {
 	@Autowired
 	private MessageSender messageSender;
 
-	private static final BiMap<Session, String> memberSession = Maps.synchronizedBiMap(//
+	private final BiMap<Session, String> memberSession = Maps.synchronizedBiMap(//
 			HashBiMap.<Session, String> create());
 
 	public void register(Session session) {
@@ -46,7 +49,6 @@ public class NextRTCServer {
 		messageSender.send(transform(messages));
 	}
 
-
 	public void unregister(Session session) {
 		Member member = disconnectMemberFromConversation(session);
 
@@ -58,7 +60,11 @@ public class NextRTCServer {
 	}
 
 	private Member getMemberBy(Session session) {
-		return memberDao.findBy(memberSession.get(session));
+		Member member = memberDao.findBy(memberSession.get(session));
+		if (member == null) {
+			throw new MemberNotFoundException();
+		}
+		return member;
 	}
 
 	private void bindSessionToMember(Session session) {
@@ -87,10 +93,12 @@ public class NextRTCServer {
 	private Member disconnectMemberFromConversation(Session session) {
 		Member member = getMemberBy(session);
 
-		Conversation conv = conversationDao.findBy(member);
-		conv.disconnect(member);
+		boolean existsConversationWithMember = conversationDao.findBy(member) != null;
 
-		log.debug("Member: " + member.getId() + " has been disconnected from conversation " + conv.getId());
+		if (existsConversationWithMember) {
+			handle(Message.createWith(left).build(), session);
+		}
+
 		return member;
 	}
 

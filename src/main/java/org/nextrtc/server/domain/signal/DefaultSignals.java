@@ -108,7 +108,7 @@ public enum DefaultSignals implements Signal {
 		public SignalResponse execute(Member member, Message message, RequestContext requestContext) {
 			logRequest(message, member);
 
-			Conversation conversation = fetchConversation(message, requestContext);
+			Conversation conversation = fetchConversation(member, requestContext);
 
 			return conversation.routeOffer(member, message);
 		}
@@ -140,7 +140,7 @@ public enum DefaultSignals implements Signal {
 		public SignalResponse execute(Member member, Message message, RequestContext requestContext) {
 			logRequest(message, member);
 
-			Conversation conversation = fetchConversation(message, requestContext);
+			Conversation conversation = fetchConversation(member, requestContext);
 
 			return conversation.routeAnswer(member, message);
 		}
@@ -167,12 +167,41 @@ public enum DefaultSignals implements Signal {
 	 * 'content':null<br>
 	 * }<br>
 	 */
-	left,
+	left {
+		@Override
+		public SignalResponse execute(Member member, Message message, RequestContext requestContext) {
+			logRequest(message, member);
+
+			Conversation conversation = fetchConversation(member, requestContext);
+
+			return conversation.routeOffer(member, message);
+		}
+	}
 	;
 
 	@Override
 	public SignalResponse execute(Member member, Message message, RequestContext requestContext) {
 		return SignalResponse.EMPTY;
+	}
+
+	protected void logRequest(Message message, Member member) {
+		log.debug(String.format("Executing: %s (%s) for %s", this.name(), message, member));
+	}
+
+	protected Conversation fetchConversation(Member member, RequestContext requestContext) {
+		Conversation conversation = requestContext.getConversationDao().findBy(member);
+		if (conversation == null) {
+			throw new ConversationNotFoundException();
+		}
+		return conversation;
+	}
+
+	protected Conversation fetchConversation(Message message, RequestContext requestContext) {
+		Conversation conversation = requestContext.getConversationDao().findBy(message.getContent());
+		if (conversation == null) {
+			throw new ConversationNotFoundException();
+		}
+		return conversation;
 	}
 
 	public static boolean isValid(String incoming) {
@@ -184,21 +213,11 @@ public enum DefaultSignals implements Signal {
 		return false;
 	}
 
-	protected void logRequest(Message message, Member member) {
-		log.debug(String.format("Executing: %s (%s) for %s", this.name(), message, member));
-	}
 
 	private static void updateMemberName(Member member, Message message, RequestContext requestContext) {
 		requestContext.getMemberDao().updateNick(member, message.getMemberName());
 	}
 
-	private static Conversation fetchConversation(Message message, RequestContext requestContext) {
-		Conversation conversation = requestContext.getConversationDao().findBy(message.getContent());
-		if (conversation == null) {
-			throw new ConversationNotFoundException();
-		}
-		return conversation;
-	}
 
 	private static final Logger log = Logger.getLogger(DefaultSignals.class);
 }

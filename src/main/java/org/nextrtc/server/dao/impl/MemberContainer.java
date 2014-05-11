@@ -1,20 +1,19 @@
 package org.nextrtc.server.dao.impl;
 
-import java.util.HashSet;
 import java.util.Set;
-
-import javax.annotation.Resource;
+import java.util.concurrent.CopyOnWriteArraySet;
 
 import org.nextrtc.server.dao.MemberDao;
 import org.nextrtc.server.domain.DefaultMember;
 import org.nextrtc.server.domain.Member;
 import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 
-@Resource
+@Component
 @Scope("singleton")
 public class MemberContainer implements MemberDao {
 
-	private Set<Member> defaultMembers = new HashSet<>();
+	private Set<Member> defaultMembers = new CopyOnWriteArraySet<>();
 
 	@Override
 	public Member create() {

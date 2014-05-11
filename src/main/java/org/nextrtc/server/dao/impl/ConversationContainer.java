@@ -3,15 +3,14 @@ package org.nextrtc.server.dao.impl;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
 
-import javax.annotation.Resource;
-
 import org.nextrtc.server.dao.ConversationDao;
 import org.nextrtc.server.domain.Conversation;
 import org.nextrtc.server.domain.DefaultConversation;
 import org.nextrtc.server.domain.Member;
 import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 
-@Resource
+@Component
 @Scope("singleton")
 public class ConversationContainer implements ConversationDao {
 
