@@ -33,7 +33,7 @@ public class DefaultConversation implements Conversation {
 		members.remove(leaving);
 		return broadcast(Message//
 				.createWith(left)//
-				.member(leaving)//
+				.withMember(leaving)//
 				.build());
 	}
 
@@ -52,7 +52,7 @@ public class DefaultConversation implements Conversation {
 	public SignalResponse join(Member member) {
 		Message message = Message//
 				.createWith(offerRequest)//
-				.member(member)//
+				.withMember(member)//
 				.build();
 
 		SignalResponse broadcast = broadcast(message);
@@ -66,7 +66,7 @@ public class DefaultConversation implements Conversation {
 
 		Message message = Message//
 				.createWith(answerRequest)//
-				.member(from)//
+				.withMember(from)//
 				.withContent(offer.getContent())//
 				.build();
 
@@ -78,7 +78,7 @@ public class DefaultConversation implements Conversation {
 
 		Message message = Message//
 				.createWith(finalize)//
-				.member(from)//
+				.withMember(from)//
 				.withContent(answer.getContent())//
 				.build();
 

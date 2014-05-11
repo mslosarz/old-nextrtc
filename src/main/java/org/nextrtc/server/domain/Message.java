@@ -7,6 +7,7 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.annotations.Expose;
 
 public class Message {
+	private static final String EMPTY = "";
 
 	/**
 	 * Use MessageDto.createWith(...) instead of new MessageDto()
@@ -16,13 +17,13 @@ public class Message {
 	}
 
 	@Expose
-	private String signal = "";
+	private String signal = EMPTY;
 
 	@Expose
 	private MessageMember member;
 
 	@Expose
-	private String content = "";
+	private String content = EMPTY;
 
 	public Signal getSignal() {
 		return DefaultSignals.valueOf(signal);
@@ -33,11 +34,11 @@ public class Message {
 	}
 
 	public String getMemberName() {
-		return member != null ? member.getName() : "";
+		return member != null ? member.getName() : EMPTY;
 	}
 
 	public String getMemberId() {
-		return member != null ? member.getId() : "";
+		return member != null ? member.getId() : EMPTY;
 	}
 
 	@Override
@@ -75,11 +76,6 @@ public class Message {
 		return new MessageBuilder(signal);
 	}
 
-	public static MessageBuilder createFrom(Message message) {
-		return new MessageBuilder(message.getSignal())//
-				.withContent(message.getContent());
-	}
-
 	public static class MessageBuilder {
 
 		private Message message = new Message();
@@ -94,7 +90,7 @@ public class Message {
 			return this;
 		}
 
-		public MessageBuilder member(Member member) {
+		public MessageBuilder withMember(Member member) {
 			message.member = new MessageMember(member);
 			return this;
 		}
