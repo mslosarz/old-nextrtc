@@ -63,7 +63,7 @@ public class NextRTCServerTest {
 	public void shouldThrowErrorOnRequestFromNotExistingMember() {
 		// given
 		Session session = mock(Session.class);
-		Message message = Message.createWith(create).member(mock(Member.class)).build();
+		Message message = Message.createWith(create).withMember(mock(Member.class)).build();
 
 		// then
 		exception.expect(MemberNotFoundException.class);
@@ -85,7 +85,7 @@ public class NextRTCServerTest {
 		server.register(session);
 
 		// when
-		server.handle(Message.createWith(create).member(member).build(), session);
+		server.handle(Message.createWith(create).withMember(member).build(), session);
 
 		// then
 		verify(sender).send((SenderRequest) Mockito.any());

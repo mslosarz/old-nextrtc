@@ -141,7 +141,7 @@ public class DefaultConversationTest {
 		// when
 		SignalResponse response = conv.routeOffer(member, //
 				createWith(offerResponse)//
-						.member(joining)//
+						.withMember(joining)//
 						.withContent("local Wladzio sdp")//
 						.build());
 
@@ -169,7 +169,7 @@ public class DefaultConversationTest {
 		// when
 		SignalResponse response = conv.routeAnswer(joining, //
 				createWith(answerResponse)//
-						.member(member)//
+						.withMember(member)//
 						.withContent("local Stefan sdp")//
 						.build());
 
@@ -196,7 +196,7 @@ public class DefaultConversationTest {
 		// when
 		conv.routeAnswer(member, //
 				createWith(answerResponse)//
-						.member(invalid)//
+						.withMember(invalid)//
 						.withContent("local Wladzio sdp")//
 						.build());
 	}

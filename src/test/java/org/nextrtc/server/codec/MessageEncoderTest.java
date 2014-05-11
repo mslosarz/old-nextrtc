@@ -22,7 +22,7 @@ public class MessageEncoderTest {
 		// given
 		Message message = createWith(created)//
 				.withContent("c")//
-				.member(new DefaultMember("qwe", "rty"))//
+				.withMember(new DefaultMember("qwe", "rty"))//
 				.build();
 
 		// when
