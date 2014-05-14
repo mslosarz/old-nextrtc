@@ -1,6 +1,6 @@
 package org.nextrtc.server.domain;
 
-import static org.nextrtc.server.domain.signal.DefaultSignals.finalize;
+import static org.nextrtc.server.domain.signal.SignalRegistry.DefaultSignal.finalize;
 
 import java.util.Collection;
 import java.util.HashSet;

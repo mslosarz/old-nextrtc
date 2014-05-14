@@ -1,7 +1,7 @@
 package org.nextrtc.server.domain;
 
-import org.nextrtc.server.domain.signal.DefaultSignals;
 import org.nextrtc.server.domain.signal.Signal;
+import org.nextrtc.server.domain.signal.SignalRegistry;
 
 import com.google.gson.GsonBuilder;
 import com.google.gson.annotations.Expose;
@@ -26,7 +26,7 @@ public class Message {
 	private String content = EMPTY;
 
 	public Signal getSignal() {
-		return DefaultSignals.valueOf(signal);
+		return SignalRegistry.get(signal);
 	}
 
 	public String getContent() {

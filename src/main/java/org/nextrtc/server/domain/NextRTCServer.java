@@ -1,6 +1,6 @@
 package org.nextrtc.server.domain;
 
-import static org.nextrtc.server.domain.signal.DefaultSignals.left;
+import static org.nextrtc.server.domain.signal.SignalRegistry.DefaultSignal.left;
 
 import java.io.IOException;
 

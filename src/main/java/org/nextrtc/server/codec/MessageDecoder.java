@@ -1,6 +1,6 @@
 package org.nextrtc.server.codec;
 
-import static org.nextrtc.server.domain.signal.DefaultSignals.isValid;
+import static org.nextrtc.server.domain.signal.SignalRegistry.isValid;
 
 import java.util.Map;
 

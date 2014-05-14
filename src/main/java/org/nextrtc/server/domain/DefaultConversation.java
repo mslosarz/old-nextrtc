@@ -1,11 +1,11 @@
 package org.nextrtc.server.domain;
 
 import static java.util.Collections.synchronizedSet;
-import static org.nextrtc.server.domain.signal.DefaultSignals.answerRequest;
-import static org.nextrtc.server.domain.signal.DefaultSignals.created;
-import static org.nextrtc.server.domain.signal.DefaultSignals.finalize;
-import static org.nextrtc.server.domain.signal.DefaultSignals.left;
-import static org.nextrtc.server.domain.signal.DefaultSignals.offerRequest;
+import static org.nextrtc.server.domain.signal.SignalRegistry.DefaultSignal.answerRequest;
+import static org.nextrtc.server.domain.signal.SignalRegistry.DefaultSignal.created;
+import static org.nextrtc.server.domain.signal.SignalRegistry.DefaultSignal.finalize;
+import static org.nextrtc.server.domain.signal.SignalRegistry.DefaultSignal.left;
+import static org.nextrtc.server.domain.signal.SignalRegistry.DefaultSignal.offerRequest;
 
 import java.util.HashSet;
 import java.util.Set;
