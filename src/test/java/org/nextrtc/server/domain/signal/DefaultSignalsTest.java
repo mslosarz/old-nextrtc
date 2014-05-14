@@ -4,11 +4,11 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isEmptyOrNullString;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
-import static org.nextrtc.server.domain.signal.DefaultSignals.answerResponse;
-import static org.nextrtc.server.domain.signal.DefaultSignals.create;
-import static org.nextrtc.server.domain.signal.DefaultSignals.join;
-import static org.nextrtc.server.domain.signal.DefaultSignals.offerResponse;
+import static org.nextrtc.server.domain.signal.SignalRegistry.DefaultSignal.answerResponse;
+import static org.nextrtc.server.domain.signal.SignalRegistry.DefaultSignal.create;
+import static org.nextrtc.server.domain.signal.SignalRegistry.DefaultSignal.join;
+import static org.nextrtc.server.domain.signal.SignalRegistry.DefaultSignal.left;
+import static org.nextrtc.server.domain.signal.SignalRegistry.DefaultSignal.offerResponse;
 
 import org.apache.commons.lang3.StringUtils;
 import org.junit.Before;
@@ -134,7 +134,16 @@ public class DefaultSignalsTest {
 
 	@Test
 	public void shouldExecuteSignalLeft() {
-		assertTrue(false);
+		// given
+		Member member = stubMember("Member");
+		Conversation conv = stubConversation();
+		conv.join(member);
+
+		// when
+		SignalResponse response = left.execute(member, null, context);
+
+		// then
+		assertNotNull(response);
 	}
 
 	private Conversation stubConversation() {
