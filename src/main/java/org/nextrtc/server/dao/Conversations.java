@@ -3,7 +3,7 @@ package org.nextrtc.server.dao;
 import org.nextrtc.server.domain.Conversation;
 import org.nextrtc.server.domain.Member;
 
-public interface ConversationDao {
+public interface Conversations {
 
 	Conversation create();
 

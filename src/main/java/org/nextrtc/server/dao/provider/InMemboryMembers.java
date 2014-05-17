@@ -1,17 +1,17 @@
-package org.nextrtc.server.dao.impl;
+package org.nextrtc.server.dao.provider;
 
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
 
-import org.nextrtc.server.dao.MemberDao;
-import org.nextrtc.server.domain.DefaultMember;
+import org.nextrtc.server.dao.Members;
 import org.nextrtc.server.domain.Member;
+import org.nextrtc.server.domain.provider.DefaultMember;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 @Component
 @Scope("singleton")
-public class MemberContainer implements MemberDao {
+public class InMemboryMembers implements Members {
 
 	private Set<Member> defaultMembers = new CopyOnWriteArraySet<>();
 

@@ -48,7 +48,7 @@ public class MessageDecoder implements Decoder.Text<Message> {
 				return true;
 			}
 		} catch (JsonSyntaxException e) {
-			// omit
+			log.error("Wrong syntax", e);
 		}
 		return false;
 	}

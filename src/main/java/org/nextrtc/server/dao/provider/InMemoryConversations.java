@@ -1,18 +1,18 @@
-package org.nextrtc.server.dao.impl;
+package org.nextrtc.server.dao.provider;
 
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
 
-import org.nextrtc.server.dao.ConversationDao;
+import org.nextrtc.server.dao.Conversations;
 import org.nextrtc.server.domain.Conversation;
-import org.nextrtc.server.domain.DefaultConversation;
 import org.nextrtc.server.domain.Member;
+import org.nextrtc.server.domain.provider.DefaultConversation;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 @Component
 @Scope("singleton")
-public class ConversationContainer implements ConversationDao {
+public class InMemoryConversations implements Conversations {
 
 	private Set<Conversation> conversations = new CopyOnWriteArraySet<>();
 	

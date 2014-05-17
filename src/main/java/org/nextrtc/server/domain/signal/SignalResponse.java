@@ -1,10 +1,13 @@
-package org.nextrtc.server.domain;
+package org.nextrtc.server.domain.signal;
 
 import static org.nextrtc.server.domain.signal.SignalRegistry.DefaultSignal.finalize;
 
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
+
+import org.nextrtc.server.domain.Member;
+import org.nextrtc.server.domain.Message;
 
 public class SignalResponse {
 

@@ -1,6 +1,8 @@
-package org.nextrtc.server.domain;
+package org.nextrtc.server.domain.provider;
 
 import java.util.UUID;
+
+import org.nextrtc.server.domain.Member;
 
 public class DefaultMember implements Member {
 

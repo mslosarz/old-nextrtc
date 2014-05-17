@@ -81,7 +81,9 @@ public class Message {
 		private Message message = new Message();
 
 		private MessageBuilder(Signal signal) {
-			assert (signal != null);
+			if (signal == null) {
+				throw new IllegalArgumentException();
+			}
 			message.signal = signal.name();
 		}
 

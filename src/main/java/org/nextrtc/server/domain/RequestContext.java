@@ -1,25 +1,25 @@
 package org.nextrtc.server.domain;
 
-import org.nextrtc.server.dao.ConversationDao;
-import org.nextrtc.server.dao.MemberDao;
+import org.nextrtc.server.dao.Conversations;
+import org.nextrtc.server.dao.Members;
 
 public class RequestContext {
 
-	private ConversationDao conversationDao;
+	private Conversations conversations;
 
-	private MemberDao memberDao;
+	private Members members;
 
-	public RequestContext(ConversationDao conversationDao, MemberDao memberDao) {
-		this.conversationDao = conversationDao;
-		this.memberDao = memberDao;
+	public RequestContext(Conversations conversations, Members members) {
+		this.conversations = conversations;
+		this.members = members;
 	}
 
-	public ConversationDao getConversationDao() {
-		return conversationDao;
+	public Conversations getConversations() {
+		return conversations;
 	}
 
-	public MemberDao getMemberDao() {
-		return memberDao;
+	public Members getMembers() {
+		return members;
 	}
 
 }

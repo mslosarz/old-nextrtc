@@ -7,8 +7,10 @@ import java.io.IOException;
 import javax.websocket.Session;
 
 import org.apache.log4j.Logger;
-import org.nextrtc.server.dao.ConversationDao;
-import org.nextrtc.server.dao.MemberDao;
+import org.nextrtc.server.dao.Conversations;
+import org.nextrtc.server.dao.Members;
+import org.nextrtc.server.domain.signal.SenderRequest;
+import org.nextrtc.server.domain.signal.SignalResponse;
 import org.nextrtc.server.exception.MemberNotFoundException;
 import org.nextrtc.server.exception.SessionCloseException;
 import org.nextrtc.server.service.MessageSender;
@@ -26,10 +28,10 @@ public class NextRTCServer {
 	private static final Logger log = Logger.getLogger(NextRTCServer.class);
 
 	@Autowired
-	private MemberDao memberDao;
+	private Members members;
 
 	@Autowired
-	private ConversationDao conversationDao;
+	private Conversations conversations;
 
 	@Autowired
 	private MessageSender messageSender;
@@ -60,7 +62,7 @@ public class NextRTCServer {
 	}
 
 	private Member getMemberBy(Session session) {
-		Member member = memberDao.findBy(memberSession.get(session));
+		Member member = members.findBy(memberSession.get(session));
 		if (member == null) {
 			throw new MemberNotFoundException();
 		}
@@ -68,7 +70,7 @@ public class NextRTCServer {
 	}
 
 	private void bindSessionToMember(Session session) {
-		Member member = memberDao.create();
+		Member member = members.create();
 		log.debug("New member: " + member + " has been created and bind to session: " + session.getId());
 		memberSession.put(session, member.getId());
 	}
@@ -77,7 +79,7 @@ public class NextRTCServer {
 		SignalResponse messages = message.getSignal().execute(//
 				member,//
 				message,//
-				new RequestContext(conversationDao, memberDao)//
+				new RequestContext(conversations, members)//
 				);
 		return messages;
 	}
@@ -93,7 +95,7 @@ public class NextRTCServer {
 	private Member disconnectMemberFromConversation(Session session) {
 		Member member = getMemberBy(session);
 
-		boolean existsConversationWithMember = conversationDao.findBy(member) != null;
+		boolean existsConversationWithMember = conversations.findBy(member) != null;
 
 		if (existsConversationWithMember) {
 			handle(Message.createWith(left).build(), session);
@@ -103,7 +105,7 @@ public class NextRTCServer {
 	}
 
 	private void removeMember(Member member) {
-		memberDao.remove(member);
+		members.remove(member);
 	}
 
 	private void unbindSession(Session session) {

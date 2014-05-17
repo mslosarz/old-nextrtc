@@ -1,5 +1,7 @@
 package org.nextrtc.server.domain;
 
+import org.nextrtc.server.domain.signal.SignalResponse;
+
 
 public interface Conversation {
 

@@ -1,9 +1,11 @@
-package org.nextrtc.server.domain;
+package org.nextrtc.server.domain.signal;
 
 import java.util.HashSet;
 import java.util.Set;
 
 import javax.websocket.Session;
+
+import org.nextrtc.server.domain.Message;
 
 public class SenderRequest {
 

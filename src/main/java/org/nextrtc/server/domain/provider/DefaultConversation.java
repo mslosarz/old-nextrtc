@@ -1,4 +1,4 @@
-package org.nextrtc.server.domain;
+package org.nextrtc.server.domain.provider;
 
 import static java.util.Collections.synchronizedSet;
 import static org.nextrtc.server.domain.signal.SignalRegistry.DefaultSignal.answerRequest;
@@ -11,6 +11,10 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
+import org.nextrtc.server.domain.Conversation;
+import org.nextrtc.server.domain.Member;
+import org.nextrtc.server.domain.Message;
+import org.nextrtc.server.domain.signal.SignalResponse;
 import org.nextrtc.server.exception.MemberNotFoundException;
 
 public class DefaultConversation implements Conversation {

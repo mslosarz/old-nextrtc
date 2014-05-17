@@ -8,7 +8,6 @@ import org.nextrtc.server.domain.Conversation;
 import org.nextrtc.server.domain.Member;
 import org.nextrtc.server.domain.Message;
 import org.nextrtc.server.domain.RequestContext;
-import org.nextrtc.server.domain.SignalResponse;
 import org.nextrtc.server.exception.ConversationNotFoundException;
 
 public class SignalRegistry {
@@ -45,7 +44,7 @@ public class SignalRegistry {
 
 				updateMemberName(owner, message, requestContext);
 
-				Conversation conversation = requestContext.getConversationDao().create();
+				Conversation conversation = requestContext.getConversations().create();
 
 				return conversation.joinOwner(owner);
 			}
@@ -194,7 +193,7 @@ public class SignalRegistry {
 		}
 
 		protected Conversation fetchConversation(Member member, RequestContext requestContext) {
-			Conversation conversation = requestContext.getConversationDao().findBy(member);
+			Conversation conversation = requestContext.getConversations().findBy(member);
 			if (conversation == null) {
 				throw new ConversationNotFoundException();
 			}
@@ -202,7 +201,7 @@ public class SignalRegistry {
 		}
 
 		protected Conversation fetchConversation(Message message, RequestContext requestContext) {
-			Conversation conversation = requestContext.getConversationDao().findBy(message.getContent());
+			Conversation conversation = requestContext.getConversations().findBy(message.getContent());
 			if (conversation == null) {
 				throw new ConversationNotFoundException();
 			}
@@ -210,7 +209,7 @@ public class SignalRegistry {
 		}
 
 		protected void updateMemberName(Member member, Message message, RequestContext requestContext) {
-			requestContext.getMemberDao().updateNick(member, message.getMemberName());
+			requestContext.getMembers().updateNick(member, message.getMemberName());
 		}
 	}
 

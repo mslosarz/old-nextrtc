@@ -2,7 +2,7 @@ package org.nextrtc.server.dao;
 
 import org.nextrtc.server.domain.Member;
 
-public interface MemberDao {
+public interface Members {
 
 	Member create();
 
