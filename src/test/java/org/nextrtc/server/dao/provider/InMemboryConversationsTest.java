@@ -1,4 +1,4 @@
-package org.nextrtc.server.dao.impl;
+package org.nextrtc.server.dao.provider;
 
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertNotNull;
@@ -7,18 +7,19 @@ import static org.junit.Assert.assertThat;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.nextrtc.server.dao.ConversationDao;
+import org.nextrtc.server.dao.Conversations;
+import org.nextrtc.server.dao.provider.InMemoryConversations;
 import org.nextrtc.server.domain.Conversation;
-import org.nextrtc.server.domain.DefaultMember;
 import org.nextrtc.server.domain.Member;
+import org.nextrtc.server.domain.provider.DefaultMember;
 
-public class ConversationContainerTest {
+public class InMemboryConversationsTest {
 	
-	private ConversationDao container;
+	private Conversations container;
 
 	@Before
 	public void setupConversation() {
-		container = new ConversationContainer();
+		container = new InMemoryConversations();
 	}
 
 	@Test

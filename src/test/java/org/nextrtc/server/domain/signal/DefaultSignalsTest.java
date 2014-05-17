@@ -13,14 +13,13 @@ import static org.nextrtc.server.domain.signal.SignalRegistry.DefaultSignal.offe
 import org.apache.commons.lang3.StringUtils;
 import org.junit.Before;
 import org.junit.Test;
-import org.nextrtc.server.dao.impl.ConversationContainer;
-import org.nextrtc.server.dao.impl.MemberContainer;
+import org.nextrtc.server.dao.provider.InMemoryConversations;
+import org.nextrtc.server.dao.provider.InMemboryMembers;
 import org.nextrtc.server.domain.Conversation;
-import org.nextrtc.server.domain.DefaultMember;
 import org.nextrtc.server.domain.Member;
 import org.nextrtc.server.domain.Message;
 import org.nextrtc.server.domain.RequestContext;
-import org.nextrtc.server.domain.SignalResponse;
+import org.nextrtc.server.domain.provider.DefaultMember;
 
 public class DefaultSignalsTest {
 
@@ -28,7 +27,7 @@ public class DefaultSignalsTest {
 
 	@Before
 	public void setupContext() {
-		context = new RequestContext(new ConversationContainer(), new MemberContainer());
+		context = new RequestContext(new InMemoryConversations(), new InMemboryMembers());
 	}
 
 	@Test
@@ -147,11 +146,11 @@ public class DefaultSignalsTest {
 	}
 
 	private Conversation stubConversation() {
-		return context.getConversationDao().create();
+		return context.getConversations().create();
 	}
 
 	private Member stubMember(String name) {
-		Member member = context.getMemberDao().create();
+		Member member = context.getMembers().create();
 		if (StringUtils.isEmpty(name)) {
 			return member;
 		}

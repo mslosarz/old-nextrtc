@@ -10,8 +10,8 @@ import static org.nextrtc.server.domain.signal.SignalRegistry.DefaultSignal.crea
 import javax.websocket.EncodeException;
 
 import org.junit.Test;
-import org.nextrtc.server.domain.DefaultMember;
 import org.nextrtc.server.domain.Message;
+import org.nextrtc.server.domain.provider.DefaultMember;
 
 public class MessageEncoderTest {
 

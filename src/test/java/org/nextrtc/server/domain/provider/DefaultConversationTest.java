@@ -1,4 +1,4 @@
-package org.nextrtc.server.domain;
+package org.nextrtc.server.domain.provider;
 
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.containsInAnyOrder;
@@ -23,7 +23,11 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+import org.nextrtc.server.domain.Conversation;
+import org.nextrtc.server.domain.Member;
+import org.nextrtc.server.domain.Message;
 import org.nextrtc.server.domain.signal.Signal;
+import org.nextrtc.server.domain.signal.SignalResponse;
 import org.nextrtc.server.exception.MemberNotFoundException;
 
 public class DefaultConversationTest {

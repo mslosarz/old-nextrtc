@@ -1,4 +1,4 @@
-package org.nextrtc.server.dao.impl;
+package org.nextrtc.server.dao.provider;
 
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isEmptyOrNullString;
@@ -8,16 +8,17 @@ import static org.junit.Assert.assertThat;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.nextrtc.server.dao.MemberDao;
+import org.nextrtc.server.dao.Members;
+import org.nextrtc.server.dao.provider.InMemboryMembers;
 import org.nextrtc.server.domain.Member;
 
-public class MemberContainerTest {
+public class InMemoryMembersTest {
 
-	private MemberDao container;
+	private Members container;
 
 	@Before
 	public void setupContainer() {
-		container = new MemberContainer();
+		container = new InMemboryMembers();
 	}
 
 	@Test

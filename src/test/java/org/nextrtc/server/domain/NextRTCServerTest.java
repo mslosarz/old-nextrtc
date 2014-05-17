@@ -17,8 +17,11 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
-import org.nextrtc.server.dao.ConversationDao;
-import org.nextrtc.server.dao.MemberDao;
+import org.nextrtc.server.dao.Conversations;
+import org.nextrtc.server.dao.Members;
+import org.nextrtc.server.domain.provider.DefaultMember;
+import org.nextrtc.server.domain.signal.SenderRequest;
+import org.nextrtc.server.domain.signal.SignalResponse;
 import org.nextrtc.server.exception.MemberNotFoundException;
 import org.nextrtc.server.service.MessageSender;
 
@@ -31,10 +34,10 @@ public class NextRTCServerTest {
 	private MessageSender sender;
 
 	@Mock
-	private ConversationDao conversationDao;
+	private Conversations conversations;
 
 	@Mock
-	private MemberDao memberDao;
+	private Members members;
 
 	@Rule
 	public ExpectedException exception = ExpectedException.none();
@@ -50,13 +53,13 @@ public class NextRTCServerTest {
 		// given
 		Session session = mock(Session.class);
 		DefaultMember member = stubMember("id", "Wladzio");
-		when(memberDao.create()).thenReturn(member);
+		when(members.create()).thenReturn(member);
 
 		// when
 		server.register(session);
 
 		// then
-		verify(memberDao).create();
+		verify(members).create();
 	}
 
 	@Test
@@ -90,18 +93,7 @@ public class NextRTCServerTest {
 		// then
 		verify(sender).send((SenderRequest) Mockito.any());
 	}
-
-	private void mockMemberDaoFor(Member member) {
-		when(memberDao.create()).thenReturn(member);
-		when(memberDao.findBy("id")).thenReturn(member);
-	}
-
-	private void mockConversationDaoFor(Conversation conv, Member member) {
-		when(conversationDao.create()).thenReturn(conv);
-		when(conversationDao.findBy(member)).thenReturn(conv);
-		when(conversationDao.findBy(conv.getId())).thenReturn(conv);
-	}
-
+	
 	@Test
 	public void shouldAllowToUnregisterSession() {
 		// given
@@ -116,13 +108,24 @@ public class NextRTCServerTest {
 		// then
 	}
 
+	private void mockMemberDaoFor(Member member) {
+		when(members.create()).thenReturn(member);
+		when(members.findBy("id")).thenReturn(member);
+	}
+
+	private void mockConversationDaoFor(Conversation conv, Member member) {
+		when(conversations.create()).thenReturn(conv);
+		when(conversations.findBy(member)).thenReturn(conv);
+		when(conversations.findBy(conv.getId())).thenReturn(conv);
+	}
+
 	private DefaultMember stubMember(String id, String name) {
 		return new DefaultMember(id, name);
 	}
 
 	@After
 	public void resetMocks() {
-		reset(sender, conversationDao, memberDao);
+		reset(sender, conversations, members);
 	}
 
 }

@@ -9,7 +9,7 @@ import javax.websocket.Session;
 
 import org.junit.Test;
 import org.nextrtc.server.domain.Message;
-import org.nextrtc.server.domain.SenderRequest;
+import org.nextrtc.server.domain.signal.SenderRequest;
 import org.nextrtc.server.service.MessageSender;
 
 

@@ -1,4 +1,4 @@
-package org.nextrtc.server.domain;
+package org.nextrtc.server.domain.signal;
 
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
@@ -7,6 +7,8 @@ import static org.mockito.Mockito.mock;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+import org.nextrtc.server.domain.Message;
+import org.nextrtc.server.domain.signal.SenderRequest;
 
 public class SenderRequestTest {
 

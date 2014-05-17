@@ -1,4 +1,4 @@
-package org.nextrtc.server.domain;
+package org.nextrtc.server.domain.signal;
 
 import static java.util.Arrays.asList;
 import static org.hamcrest.Matchers.is;
@@ -8,6 +8,9 @@ import static org.mockito.Mockito.mock;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+import org.nextrtc.server.domain.Member;
+import org.nextrtc.server.domain.Message;
+import org.nextrtc.server.domain.signal.SignalResponse;
 
 public class SignalResponseTest {
 
