@@ -12,7 +12,6 @@ import javax.websocket.Session;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
-import org.nextrtc.server.dao.Members;
 import org.nextrtc.server.domain.Message;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
@@ -25,13 +24,9 @@ public class NextRTCEndpointTest {
 	@Autowired
 	private NextRTCEndpoint endpoint;
 
-	@Autowired
-	private Members members;
-
 	@Test
 	public void shouldAutowireDependency() {
 		assertNotNull(endpoint);
-		assertNotNull(members);
 	}
 
 	@Test
@@ -41,9 +36,9 @@ public class NextRTCEndpointTest {
 		Async async = mock(Async.class);
 		when(incomming.getAsyncRemote()).thenReturn(async);
 
-		endpoint.onOpen(incomming);
 
 		// when
+		endpoint.onOpen(incomming);
 		endpoint.onMessage(Message.createWith(create).build(), incomming);
 		endpoint.onClose(incomming);
 
