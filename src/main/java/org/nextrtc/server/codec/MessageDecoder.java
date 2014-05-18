@@ -1,5 +1,6 @@
 package org.nextrtc.server.codec;
 
+import static org.apache.commons.lang3.StringEscapeUtils.escapeHtml4;
 import static org.nextrtc.server.domain.signal.SignalRegistry.isValid;
 
 import java.util.Map;
@@ -32,7 +33,7 @@ public class MessageDecoder implements Decoder.Text<Message> {
 
 	@Override
 	public Message decode(String json) throws DecodeException {
-		return gson.fromJson(json, Message.class);
+		return gson.fromJson(escapeHtml4(json), Message.class);
 	}
 
 	@Override

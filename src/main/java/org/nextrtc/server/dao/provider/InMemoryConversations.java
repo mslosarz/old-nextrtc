@@ -24,6 +24,13 @@ public class InMemoryConversations implements Conversations {
 	}
 
 	@Override
+	public Conversation create(String id) {
+		Conversation conv = new DefaultConversation(id);
+		conversations.add(conv);
+		return conv;
+	}
+
+	@Override
 	public Conversation findBy(String conversationId) {
 		for (Conversation conv : conversations) {
 			if (conv.getId().equals(conversationId)) {

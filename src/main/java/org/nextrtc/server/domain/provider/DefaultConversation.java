@@ -1,6 +1,7 @@
 package org.nextrtc.server.domain.provider;
 
 import static java.util.Collections.synchronizedSet;
+import static org.apache.commons.lang3.StringUtils.isEmpty;
 import static org.nextrtc.server.domain.signal.SignalRegistry.DefaultSignal.answerRequest;
 import static org.nextrtc.server.domain.signal.SignalRegistry.DefaultSignal.created;
 import static org.nextrtc.server.domain.signal.SignalRegistry.DefaultSignal.finalize;
@@ -24,6 +25,13 @@ public class DefaultConversation implements Conversation {
 
 	public DefaultConversation() {
 		this.id = UUID.randomUUID().toString();
+	}
+
+	public DefaultConversation(String id) {
+		if (isEmpty(id)) {
+			throw new IllegalArgumentException("Conversation id must be set.");
+		}
+		this.id = id;
 	}
 
 	public SignalResponse broadcast(Message message) {

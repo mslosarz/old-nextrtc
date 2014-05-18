@@ -1,13 +1,17 @@
 package org.nextrtc.server.domain.signal;
 
+import static org.springframework.util.StringUtils.isEmpty;
+
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.log4j.Logger;
+import org.nextrtc.server.dao.Conversations;
 import org.nextrtc.server.domain.Conversation;
 import org.nextrtc.server.domain.Member;
 import org.nextrtc.server.domain.Message;
 import org.nextrtc.server.domain.RequestContext;
+import org.nextrtc.server.exception.ConversationExists;
 import org.nextrtc.server.exception.ConversationNotFoundException;
 
 public class SignalRegistry {
@@ -44,9 +48,21 @@ public class SignalRegistry {
 
 				updateMemberName(owner, message, requestContext);
 
-				Conversation conversation = requestContext.getConversations().create();
+				Conversation conversation = createConversation(message, requestContext);
 
 				return conversation.joinOwner(owner);
+			}
+
+			private Conversation createConversation(Message message, RequestContext requestContext) {
+				String conversationId = message.getContent();
+				Conversations conversations = requestContext.getConversations();
+
+				if (isEmpty(conversationId)) {
+					return conversations.create();
+				} else if (conversations.findBy(conversationId) == null) {
+					return conversations.create(conversationId);
+				}
+				throw new ConversationExists("Conversation " + conversationId + "exists!");
 			}
 		},
 
@@ -79,9 +95,17 @@ public class SignalRegistry {
 
 				updateMemberName(member, message, requestContext);
 
-				Conversation conversation = fetchConversation(message, requestContext);
+				Conversation conversation = fetchConversationBy(message, requestContext);
 
+				boolean conversationDoesNotExists = conversation == null;
+				if (conversationDoesNotExists) {
+					return create.execute(member, message, requestContext);
+				}
 				return conversation.join(member);
+			}
+
+			protected Conversation fetchConversationBy(Message message, RequestContext requestContext) {
+				return requestContext.getConversations().findBy(message.getContent());
 			}
 		},
 
@@ -113,7 +137,7 @@ public class SignalRegistry {
 			public SignalResponse execute(Member member, Message message, RequestContext requestContext) {
 				logRequest(message, member);
 
-				Conversation conversation = fetchConversation(member, requestContext);
+				Conversation conversation = getConversation(member, requestContext);
 
 				return conversation.routeOffer(member, message);
 			}
@@ -145,7 +169,7 @@ public class SignalRegistry {
 			public SignalResponse execute(Member member, Message message, RequestContext requestContext) {
 				logRequest(message, member);
 
-				Conversation conversation = fetchConversation(member, requestContext);
+				Conversation conversation = getConversation(member, requestContext);
 
 				return conversation.routeAnswer(member, message);
 			}
@@ -177,7 +201,7 @@ public class SignalRegistry {
 			public SignalResponse execute(Member member, Message message, RequestContext requestContext) {
 				logRequest(message, member);
 
-				Conversation conversation = fetchConversation(member, requestContext);
+				Conversation conversation = getConversation(member, requestContext);
 
 				return conversation.disconnect(member);
 			}
@@ -192,16 +216,8 @@ public class SignalRegistry {
 			log.debug(String.format("Executing: %s (%s) for %s", this.name(), message, member));
 		}
 
-		protected Conversation fetchConversation(Member member, RequestContext requestContext) {
+		protected Conversation getConversation(Member member, RequestContext requestContext) {
 			Conversation conversation = requestContext.getConversations().findBy(member);
-			if (conversation == null) {
-				throw new ConversationNotFoundException();
-			}
-			return conversation;
-		}
-
-		protected Conversation fetchConversation(Message message, RequestContext requestContext) {
-			Conversation conversation = requestContext.getConversations().findBy(message.getContent());
 			if (conversation == null) {
 				throw new ConversationNotFoundException();
 			}

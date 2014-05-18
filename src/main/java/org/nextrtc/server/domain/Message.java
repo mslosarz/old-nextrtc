@@ -1,5 +1,7 @@
 package org.nextrtc.server.domain;
 
+import static org.apache.commons.lang3.StringUtils.EMPTY;
+
 import org.nextrtc.server.domain.signal.Signal;
 import org.nextrtc.server.domain.signal.SignalRegistry;
 
@@ -7,7 +9,6 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.annotations.Expose;
 
 public class Message {
-	private static final String EMPTY = "";
 
 	/**
 	 * Use MessageDto.createWith(...) instead of new MessageDto()
@@ -76,9 +77,20 @@ public class Message {
 		return new MessageBuilder(signal);
 	}
 
+	public static MessageBuilder createWith(String signal) {
+		return new MessageBuilder(signal);
+	}
+
 	public static class MessageBuilder {
 
 		private Message message = new Message();
+
+		private MessageBuilder(String signal) {
+			if (signal == null) {
+				throw new IllegalArgumentException();
+			}
+			message.signal = signal;
+		}
 
 		private MessageBuilder(Signal signal) {
 			if (signal == null) {
