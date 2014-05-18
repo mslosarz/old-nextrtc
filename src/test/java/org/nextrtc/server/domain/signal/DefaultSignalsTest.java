@@ -1,27 +1,36 @@
 package org.nextrtc.server.domain.signal;
 
+import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isEmptyOrNullString;
+import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 import static org.nextrtc.server.domain.signal.SignalRegistry.DefaultSignal.answerResponse;
 import static org.nextrtc.server.domain.signal.SignalRegistry.DefaultSignal.create;
+import static org.nextrtc.server.domain.signal.SignalRegistry.DefaultSignal.created;
 import static org.nextrtc.server.domain.signal.SignalRegistry.DefaultSignal.join;
 import static org.nextrtc.server.domain.signal.SignalRegistry.DefaultSignal.left;
 import static org.nextrtc.server.domain.signal.SignalRegistry.DefaultSignal.offerResponse;
 
 import org.apache.commons.lang3.StringUtils;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
-import org.nextrtc.server.dao.provider.InMemoryConversations;
+import org.junit.rules.ExpectedException;
 import org.nextrtc.server.dao.provider.InMemboryMembers;
+import org.nextrtc.server.dao.provider.InMemoryConversations;
 import org.nextrtc.server.domain.Conversation;
 import org.nextrtc.server.domain.Member;
 import org.nextrtc.server.domain.Message;
 import org.nextrtc.server.domain.RequestContext;
 import org.nextrtc.server.domain.provider.DefaultMember;
+import org.nextrtc.server.exception.ConversationExists;
 
 public class DefaultSignalsTest {
+
+	@Rule
+	public ExpectedException exception = ExpectedException.none();
 
 	private RequestContext context;
 
@@ -93,6 +102,69 @@ public class DefaultSignalsTest {
 		// then
 		assertNotNull(response);
 		assertThat(member.getName(), is("Joining"));
+	}
+
+	@Test
+	public void shouldCreateConversationWhenRequestedJoinWithoutId() {
+		// given
+		Member member = stubMember(null);
+		Message message = Message.createWith(join)//
+				.withMember(new DefaultMember(member.getId(), "Creating"))//
+				.withContent(null)//
+				.build();
+
+		// when
+		SignalResponse response = join.execute(member, message, context);
+
+		// then
+		assertNotNull(response);
+		Message responseMessage = response.getMessage();
+		assertThat(responseMessage.getContent(), not(isEmptyOrNullString()));
+		assertThat(responseMessage.getSignal(), is(created));
+		assertThat(response.getRecipients(), contains(member));
+	}
+
+	@Test
+	public void shouldCreateConversationWithGivenIdWhenConversationDoNotExists() {
+		// given
+		Member member = stubMember(null);
+		Message message = Message.createWith(join)//
+				.withMember(new DefaultMember(member.getId(), "Creating"))//
+				.withContent("my-conversation-name")//
+				.build();
+
+		// when
+		SignalResponse response = join.execute(member, message, context);
+
+		// then
+		assertNotNull(response);
+		Message responseMessage = response.getMessage();
+		assertThat(responseMessage.getContent(), is("my-conversation-name"));
+		assertThat(responseMessage.getSignal(), is(created));
+		assertThat(response.getRecipients(), contains(member));
+	}
+
+	@Test
+	public void shouldThrowExceptionForCreateConversationWithExistingId() {
+		// given
+		Member member = stubMember(null);
+		Message message = Message.createWith(create)//
+				.withMember(new DefaultMember(member.getId(), "Wladzio"))//
+				.withContent("wladzio-room")//
+				.build();
+		create.execute(member, message, context);
+
+		message = Message.createWith(create)//
+				.withMember(new DefaultMember(member.getId(), "Creating"))//
+				.withContent("wladzio-room")//
+				.build();
+
+		// then
+		exception.expect(ConversationExists.class);
+
+		// when
+		create.execute(member, message, context);
+
 	}
 
 	@Test

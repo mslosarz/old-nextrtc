@@ -5,6 +5,7 @@ import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.nextrtc.server.domain.signal.SignalRegistry.DefaultSignal.create;
+import static org.nextrtc.server.domain.signal.SignalRegistry.DefaultSignal.join;
 
 import javax.websocket.Session;
 
@@ -106,6 +107,29 @@ public class NextRTCServerTest {
 		server.unregister(session);
 
 		// then
+	}
+
+	@Test
+	public void shouldAllowToJoinToNotExistingConversation() {
+		// given
+		Session session = mock(Session.class);
+		DefaultMember member = stubMember("id", "Wladzio");
+		when(members.create()).thenReturn(member);
+		when(members.findBy("id")).thenReturn(member);
+
+		Conversation conv = mock(Conversation.class);
+		when(conv.getId()).thenReturn("cid");
+		when(conv.joinOwner(member)).thenReturn(SignalResponse.EMPTY);
+		mockConversationDaoFor(conv, member);
+		server.register(session);
+
+		// when
+		server.handle(Message.createWith(join).withMember(member).build(), session);
+
+		// then
+		verify(members).create();
+		verify(conversations).create();
+		verify(sender).send((SenderRequest) Mockito.any());
 	}
 
 	private void mockMemberDaoFor(Member member) {

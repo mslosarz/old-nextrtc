@@ -1,5 +1,6 @@
 package org.nextrtc.server.codec;
 
+import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isEmptyOrNullString;
@@ -47,5 +48,20 @@ public class MessageDecoderTest {
 		assertThat(result.getMemberId(), isEmptyOrNullString());
 		assertThat(result.getMemberName(), isEmptyOrNullString());
 		assertThat(result.getContent(), isEmptyOrNullString());
+	}
+
+	@Test
+	public void shouldReplaceXSSAttack() throws DecodeException {
+		// given
+		String validJson = "{'signal' : 'join', 'member':null, 'content':'<script>alert(1);</script>'}";
+
+		// when
+		Message result = decoder.decode(validJson);
+
+		// then
+		assertNotNull(result);
+		assertThat(result.getSignal(), equalTo((Signal) join));
+
+		assertThat(result.getContent(), containsString("&lt;script&gt;alert"));
 	}
 }
