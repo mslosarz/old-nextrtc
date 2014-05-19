@@ -1,4 +1,4 @@
-package org.nextrtc.server.service.impl;
+package org.nextrtc.server.service.provider;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -11,6 +11,7 @@ import org.junit.Test;
 import org.nextrtc.server.domain.Message;
 import org.nextrtc.server.domain.signal.SenderRequest;
 import org.nextrtc.server.service.MessageSender;
+import org.nextrtc.server.service.provider.DefaultMessageSender;
 
 
 public class DefaultMessageSenderTest {

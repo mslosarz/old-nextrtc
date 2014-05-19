@@ -1,14 +1,16 @@
 package org.nextrtc.server.dao.provider;
 
 import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
+
+import java.util.Optional;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.nextrtc.server.dao.Conversations;
-import org.nextrtc.server.dao.provider.InMemoryConversations;
 import org.nextrtc.server.domain.Conversation;
 import org.nextrtc.server.domain.Member;
 import org.nextrtc.server.domain.provider.DefaultMember;
@@ -39,11 +41,11 @@ public class InMemboryConversationsTest {
 		Conversation created = container.create();
 
 		// when
-		Conversation found = container.findBy(created.getId());
+		Optional<Conversation> found = container.findBy(created.getId());
 
 		// then
-		assertNotNull(found);
-		assertThat(found, is(created));
+		assertTrue(found.isPresent());
+		assertThat(found.get(), is(created));
 	}
 
 	@Test
@@ -51,10 +53,10 @@ public class InMemboryConversationsTest {
 		// given
 
 		// when
-		Conversation found = container.findBy("not existing one");
+		Optional<Conversation> found = container.findBy("not existing one");
 
 		// then
-		assertNull(found);
+		assertFalse(found.isPresent());
 	}
 
 	@Test
@@ -63,10 +65,10 @@ public class InMemboryConversationsTest {
 		String nullString = null;
 
 		// when
-		Conversation found = container.findBy(nullString);
+		Optional<Conversation> found = container.findBy(nullString);
 
 		// then
-		assertNull(found);
+		assertFalse(found.isPresent());
 	}
 
 	@Test
@@ -77,11 +79,11 @@ public class InMemboryConversationsTest {
 		created.join(member);
 
 		// when
-		Conversation found = container.findBy(member);
+		Optional<Conversation> found = container.findBy(member);
 
 		// then
-		assertNotNull(found);
-		assertThat(found, is(created));
+		assertTrue(found.isPresent());
+		assertThat(found.get(), is(created));
 	}
 
 	@Test
@@ -93,10 +95,10 @@ public class InMemboryConversationsTest {
 		Member nullMember = null;
 
 		// when
-		Conversation found = container.findBy(nullMember);
+		Optional<Conversation> found = container.findBy(nullMember);
 
 		// then
-		assertNull(found);
+		assertFalse(found.isPresent());
 	}
 
 	@Test
@@ -106,10 +108,10 @@ public class InMemboryConversationsTest {
 
 		// when
 		container.remove(conv);
-		Conversation found = container.findBy(conv.getId());
+		Optional<Conversation> found = container.findBy(conv.getId());
 
 		// then
-		assertNull(found);
+		assertFalse(found.isPresent());
 	}
 
 	@Test
@@ -119,10 +121,10 @@ public class InMemboryConversationsTest {
 
 		// when
 		container.remove(null);
-		Conversation found = container.findBy(conv.getId());
+		Optional<Conversation> found = container.findBy(conv.getId());
 
 		// then
-		assertNotNull(found);
+		assertTrue(found.isPresent());
 	}
 
 }

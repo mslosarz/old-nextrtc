@@ -2,14 +2,16 @@ package org.nextrtc.server.dao.provider;
 
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isEmptyOrNullString;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
+
+import java.util.Optional;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.nextrtc.server.dao.Members;
-import org.nextrtc.server.dao.provider.InMemboryMembers;
 import org.nextrtc.server.domain.Member;
 
 public class InMemoryMembersTest {
@@ -39,11 +41,11 @@ public class InMemoryMembersTest {
 		Member member = container.create();
 
 		// when
-		Member found = container.findBy(member.getId());
+		Optional<Member> found = container.findBy(member.getId());
 
 		// then
-		assertNotNull(found);
-		assertThat(found, is(member));
+		assertTrue(found.isPresent());
+		assertThat(found.get(), is(member));
 	}
 
 	@Test
@@ -55,7 +57,7 @@ public class InMemoryMembersTest {
 		container.remove(member);
 		
 		// then
-		assertNull(container.findBy(member.getId()));
+		assertFalse(container.findBy(member.getId()).isPresent());
 	}
 
 	@Test
@@ -70,9 +72,10 @@ public class InMemoryMembersTest {
 		// then
 		assertThat(member.getName(), is("Stefan"));
 
-		Member found = container.findBy(member.getId());
-		assertThat(member.getId(), is(found.getId()));
-		assertThat(member.getName(), is(found.getName()));
+		Optional<Member> found = container.findBy(member.getId());
+		assertTrue(found.isPresent());
+		assertThat(member.getId(), is(found.get().getId()));
+		assertThat(member.getName(), is(found.get().getName()));
 	}
 
 }
