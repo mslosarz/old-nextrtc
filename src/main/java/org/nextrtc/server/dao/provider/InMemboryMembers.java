@@ -1,5 +1,6 @@
 package org.nextrtc.server.dao.provider;
 
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
 
@@ -23,13 +24,10 @@ public class InMemboryMembers implements Members {
 	}
 
 	@Override
-	public Member findBy(String id) {
-		for (Member member : defaultMembers) {
-			if (member.getId().equals(id)) {
-				return member;
-			}
-		}
-		return null;
+	public Optional<Member> findBy(String id) {
+		return defaultMembers.stream()//
+				.filter(member -> member.getId().equals(id))//
+				.findFirst();
 	}
 
 	@Override

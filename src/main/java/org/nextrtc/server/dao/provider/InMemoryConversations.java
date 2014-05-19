@@ -1,5 +1,6 @@
 package org.nextrtc.server.dao.provider;
 
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
 
@@ -15,7 +16,7 @@ import org.springframework.stereotype.Component;
 public class InMemoryConversations implements Conversations {
 
 	private Set<Conversation> conversations = new CopyOnWriteArraySet<>();
-	
+
 	@Override
 	public Conversation create() {
 		Conversation conv = new DefaultConversation();
@@ -31,23 +32,17 @@ public class InMemoryConversations implements Conversations {
 	}
 
 	@Override
-	public Conversation findBy(String conversationId) {
-		for (Conversation conv : conversations) {
-			if (conv.getId().equals(conversationId)) {
-				return conv;
-			}
-		}
-		return null;
+	public Optional<Conversation> findBy(String conversationId) {
+		return conversations.stream()//
+				.filter(conv -> conv.getId().equals(conversationId))//
+				.findFirst();
 	}
 
 	@Override
-	public Conversation findBy(Member member) {
-		for (Conversation conv : conversations) {
-			if (conv.has(member)) {
-				return conv;
-			}
-		}
-		return null;
+	public Optional<Conversation> findBy(Member member) {
+		return conversations.stream()//
+				.filter(conv -> conv.has(member))//
+				.findFirst();
 	}
 
 	@Override

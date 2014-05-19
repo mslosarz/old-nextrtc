@@ -3,6 +3,7 @@ package org.nextrtc.server.domain.signal;
 import static org.springframework.util.StringUtils.isEmpty;
 
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.log4j.Logger;
@@ -59,10 +60,10 @@ public class SignalRegistry {
 
 				if (isEmpty(conversationId)) {
 					return conversations.create();
-				} else if (conversations.findBy(conversationId) == null) {
+				} else if (conversations.findBy(conversationId).isPresent() == false) {
 					return conversations.create(conversationId);
 				}
-				throw new ConversationExists("Conversation " + conversationId + "exists!");
+				throw new ConversationExists("Conversation " + conversationId + " exists!");
 			}
 		},
 
@@ -95,16 +96,15 @@ public class SignalRegistry {
 
 				updateMemberName(member, message, requestContext);
 
-				Conversation conversation = fetchConversationBy(message, requestContext);
+				Optional<Conversation> conversation = fetchConversationBy(message, requestContext);
 
-				boolean conversationDoesNotExists = conversation == null;
-				if (conversationDoesNotExists) {
+				if (conversation.isPresent() == false) {
 					return create.execute(member, message, requestContext);
 				}
-				return conversation.join(member);
+				return conversation.get().join(member);
 			}
 
-			protected Conversation fetchConversationBy(Message message, RequestContext requestContext) {
+			protected Optional<Conversation> fetchConversationBy(Message message, RequestContext requestContext) {
 				return requestContext.getConversations().findBy(message.getContent());
 			}
 		},
@@ -217,11 +217,7 @@ public class SignalRegistry {
 		}
 
 		protected Conversation getConversation(Member member, RequestContext requestContext) {
-			Conversation conversation = requestContext.getConversations().findBy(member);
-			if (conversation == null) {
-				throw new ConversationNotFoundException();
-			}
-			return conversation;
+			return requestContext.getConversations().findBy(member).orElseThrow(ConversationNotFoundException::new);
 		}
 
 		protected void updateMemberName(Member member, Message message, RequestContext requestContext) {

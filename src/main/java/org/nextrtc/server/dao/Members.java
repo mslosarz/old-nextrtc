@@ -1,12 +1,14 @@
 package org.nextrtc.server.dao;
 
+import java.util.Optional;
+
 import org.nextrtc.server.domain.Member;
 
 public interface Members {
 
 	Member create();
 
-	Member findBy(String id);
+	Optional<Member> findBy(String id);
 
 	void remove(Member member);
 
