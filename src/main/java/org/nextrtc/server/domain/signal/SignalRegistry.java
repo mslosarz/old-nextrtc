@@ -3,7 +3,6 @@ package org.nextrtc.server.domain.signal;
 import static org.springframework.util.StringUtils.isEmpty;
 
 import java.util.Map;
-import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.log4j.Logger;
@@ -14,6 +13,8 @@ import org.nextrtc.server.domain.Message;
 import org.nextrtc.server.domain.RequestContext;
 import org.nextrtc.server.exception.ConversationExists;
 import org.nextrtc.server.exception.ConversationNotFoundException;
+
+import com.google.common.base.Optional;
 
 public class SignalRegistry {
 	private static final Logger log = Logger.getLogger(SignalRegistry.class);
@@ -217,7 +218,10 @@ public class SignalRegistry {
 		}
 
 		protected Conversation getConversation(Member member, RequestContext requestContext) {
-			return requestContext.getConversations().findBy(member).orElseThrow(ConversationNotFoundException::new);
+			for (Conversation conv : requestContext.getConversations().findBy(member).asSet()) {
+				return conv;
+			}
+			throw new ConversationNotFoundException();
 		}
 
 		protected void updateMemberName(Member member, Message message, RequestContext requestContext) {

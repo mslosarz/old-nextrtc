@@ -1,20 +1,17 @@
 package org.nextrtc.server;
 
 import javax.websocket.OnClose;
+import javax.websocket.OnError;
 import javax.websocket.OnMessage;
 import javax.websocket.OnOpen;
 import javax.websocket.Session;
-import javax.websocket.server.ServerEndpoint;
 
-import org.nextrtc.server.codec.MessageDecoder;
-import org.nextrtc.server.codec.MessageEncoder;
 import org.nextrtc.server.domain.Message;
 import org.nextrtc.server.domain.NextRTCServer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
-@ServerEndpoint(value = "/signaling", decoders = MessageDecoder.class, encoders = MessageEncoder.class)
 public class NextRTCEndpoint {
 
 	@Autowired
@@ -35,4 +32,14 @@ public class NextRTCEndpoint {
 		server.unregister(session);
 	}
 
+	@OnError
+	public void onError(Session session, Throwable t) {
+		session.getAsyncRemote().sendObject(Message.createWith("error")//
+				.withContent(t.getMessage())//
+				.build());
+	}
+
+	public void setServer(NextRTCServer server) {
+		this.server = server;
+	}
 }

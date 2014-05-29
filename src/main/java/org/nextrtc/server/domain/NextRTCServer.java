@@ -62,7 +62,10 @@ public class NextRTCServer {
 	}
 
 	private Member getMemberBy(Session session) {
-		return members.findBy(memberSession.get(session)).orElseThrow(MemberNotFoundException::new);
+		for (Member member : members.findBy(memberSession.get(session)).asSet()) {
+			return member;
+		}
+		throw new MemberNotFoundException();
 	}
 
 	private void bindSessionToMember(Session session) {

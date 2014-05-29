@@ -1,6 +1,5 @@
 package org.nextrtc.server.dao.provider;
 
-import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
 
@@ -9,6 +8,8 @@ import org.nextrtc.server.domain.Member;
 import org.nextrtc.server.domain.provider.DefaultMember;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
+
+import com.google.common.base.Optional;
 
 @Component
 @Scope("singleton")
@@ -25,9 +26,14 @@ public class InMemboryMembers implements Members {
 
 	@Override
 	public Optional<Member> findBy(String id) {
-		return defaultMembers.stream()//
-				.filter(member -> member.getId().equals(id))//
-				.findFirst();
+		Member result = null;
+		for(Member member : defaultMembers){
+			if(member.getId().equals(id)){
+				result = member;
+				break;
+			}
+		}
+		return Optional.fromNullable(result);
 	}
 
 	@Override

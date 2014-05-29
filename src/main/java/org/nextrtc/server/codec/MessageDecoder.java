@@ -14,7 +14,6 @@ import org.nextrtc.server.domain.Message;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.google.gson.JsonSyntaxException;
 
 public class MessageDecoder implements Decoder.Text<Message> {
 	private static final Logger log = Logger.getLogger(MessageDecoder.class);
@@ -33,12 +32,13 @@ public class MessageDecoder implements Decoder.Text<Message> {
 
 	@Override
 	public Message decode(String json) throws DecodeException {
-		return gson.fromJson(escapeHtml4(json), Message.class);
+		return gson.fromJson(escapeHtml4(json.replace("\"", "'")), Message.class);
 	}
 
 	@Override
 	@SuppressWarnings("unchecked")
 	public boolean willDecode(String json) {
+		json = json.replace("\"", "'");
 		log.debug(String.format("Request: %s", json));
 
 		try {
@@ -48,7 +48,7 @@ public class MessageDecoder implements Decoder.Text<Message> {
 			if (isValid(object.get("signal")) && hasMember) {
 				return true;
 			}
-		} catch (JsonSyntaxException e) {
+		} catch (Exception e) {
 			log.error("Wrong syntax", e);
 		}
 		return false;

@@ -1,9 +1,9 @@
 package org.nextrtc.server.dao;
 
-import java.util.Optional;
-
 import org.nextrtc.server.domain.Conversation;
 import org.nextrtc.server.domain.Member;
+
+import com.google.common.base.Optional;
 
 public interface Conversations {
 

@@ -1,5 +1,7 @@
 package org.nextrtc.server.service.provider;
 
+import javax.websocket.Session;
+
 import org.nextrtc.server.domain.Message;
 import org.nextrtc.server.domain.signal.SenderRequest;
 import org.nextrtc.server.service.MessageSender;
@@ -14,8 +16,9 @@ public class DefaultMessageSender implements MessageSender {
 	public void send(SenderRequest request) {
 		if (request != null) {
 			Message message = request.getMessage();
-			request.getSessions()//
-					.forEach(session -> session.getAsyncRemote().sendObject(message));
+			for (Session session : request.getSessions()) {
+				session.getAsyncRemote().sendObject(message);
+			}
 		}
 	}
 
