@@ -7,12 +7,12 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
-import java.util.Optional;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.nextrtc.server.dao.Members;
 import org.nextrtc.server.domain.Member;
+
+import com.google.common.base.Optional;
 
 public class InMemoryMembersTest {
 

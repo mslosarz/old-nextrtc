@@ -1,6 +1,6 @@
 package org.nextrtc.server.domain;
 
-import static java.util.Optional.ofNullable;
+import static com.google.common.base.Optional.fromNullable;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.verify;
@@ -68,7 +68,7 @@ public class NextRTCServerTest {
 	public void shouldThrowErrorOnRequestFromNotExistingMember() {
 		// given
 		Session session = mock(Session.class);
-		when(members.findBy(Mockito.anyObject())).thenReturn(ofNullable(null));
+		when(members.findBy(Mockito.anyString())).thenReturn(fromNullable((Member) null));
 		Message message = Message.createWith(create).withMember(mock(Member.class)).build();
 
 		// then
@@ -117,9 +117,9 @@ public class NextRTCServerTest {
 		Session session = mock(Session.class);
 		DefaultMember member = stubMember("id", "Wladzio");
 		when(members.create()).thenReturn(member);
-		when(members.findBy("id")).thenReturn(ofNullable(member));
+		when(members.findBy("id")).thenReturn(fromNullable((Member) member));
 
-		when(conversations.findBy(Mockito.anyObject())).thenReturn(ofNullable(null));
+		when(conversations.findBy(Mockito.anyString())).thenReturn(fromNullable((Conversation) null));
 		Conversation conv = mock(Conversation.class);
 		when(conv.getId()).thenReturn("cid");
 		when(conv.joinOwner(member)).thenReturn(SignalResponse.EMPTY);
@@ -137,13 +137,13 @@ public class NextRTCServerTest {
 
 	private void mockMemberDaoFor(Member member) {
 		when(members.create()).thenReturn(member);
-		when(members.findBy("id")).thenReturn(ofNullable(member));
+		when(members.findBy("id")).thenReturn(fromNullable(member));
 	}
 
 	private void mockConversationDaoFor(Conversation conv, Member member) {
 		when(conversations.create()).thenReturn(conv);
-		when(conversations.findBy(member)).thenReturn(ofNullable(conv));
-		when(conversations.findBy(conv.getId())).thenReturn(ofNullable(conv));
+		when(conversations.findBy(member)).thenReturn(fromNullable(conv));
+		when(conversations.findBy(conv.getId())).thenReturn(fromNullable(conv));
 	}
 
 	private DefaultMember stubMember(String id, String name) {

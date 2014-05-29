@@ -6,6 +6,7 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isEmptyOrNullString;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 import static org.nextrtc.server.domain.signal.SignalRegistry.DefaultSignal.join;
 
 import javax.websocket.DecodeException;
@@ -64,4 +65,18 @@ public class MessageDecoderTest {
 
 		assertThat(result.getContent(), containsString("&lt;script&gt;alert"));
 	}
+
+	@Test
+	public void shouldParseThisRequest() throws DecodeException {
+		// given
+		String json = "{'signal':'join','member':{'id':null,'name':'sdfds'}}".replace("'", "\"");
+
+		// when
+		assertTrue(decoder.willDecode(json));
+		Message decode = decoder.decode(json);
+
+		// then
+		assertNotNull(decode);
+	}
+
 }

@@ -120,7 +120,7 @@ public class DefaultSignalsTest {
 		assertNotNull(response);
 		Message responseMessage = response.getMessage();
 		assertThat(responseMessage.getContent(), not(isEmptyOrNullString()));
-		assertThat(responseMessage.getSignal(), is(created));
+		assertThat(responseMessage.getSignal(), is((Signal) created));
 		assertThat(response.getRecipients(), contains(member));
 	}
 
@@ -140,7 +140,7 @@ public class DefaultSignalsTest {
 		assertNotNull(response);
 		Message responseMessage = response.getMessage();
 		assertThat(responseMessage.getContent(), is("my-conversation-name"));
-		assertThat(responseMessage.getSignal(), is(created));
+		assertThat(responseMessage.getSignal(), is((Signal) created));
 		assertThat(response.getRecipients(), contains(member));
 	}
 

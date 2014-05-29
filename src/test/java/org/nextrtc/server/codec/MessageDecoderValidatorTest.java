@@ -26,6 +26,7 @@ public class MessageDecoderValidatorTest {
 						{ "{\"signal\" : join, \"content\" : fish , 'member' : null}", false },//
 						{ "{'signal' : 'created', member : {} }", true },//
 						{ "{'content' : 'empty'}", false },//
+						{ "{'signal':'join','member':{'id':null,'name':'asdf'}}", true }
 				});
 	}
 
