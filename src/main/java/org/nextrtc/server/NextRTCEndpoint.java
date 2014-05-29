@@ -10,12 +10,21 @@ import org.nextrtc.server.domain.Message;
 import org.nextrtc.server.domain.NextRTCServer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.web.context.ContextLoader;
+import org.springframework.web.context.WebApplicationContext;
 
 @Component
 public class NextRTCEndpoint {
 
 	@Autowired
 	private NextRTCServer server;
+
+	public NextRTCEndpoint() {
+		WebApplicationContext ctx = ContextLoader.getCurrentWebApplicationContext();
+		if (ctx != null) {
+			server = ctx.getBean(NextRTCServer.class);
+		}
+	}
 
 	@OnOpen
 	public void onOpen(Session session) {
