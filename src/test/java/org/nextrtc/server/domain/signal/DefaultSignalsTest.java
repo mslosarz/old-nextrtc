@@ -4,6 +4,7 @@ import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isEmptyOrNullString;
 import static org.hamcrest.Matchers.not;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 import static org.nextrtc.server.domain.signal.SignalRegistry.DefaultSignal.answerResponse;
@@ -215,6 +216,21 @@ public class DefaultSignalsTest {
 
 		// then
 		assertNotNull(response);
+	}
+
+	@Test
+	public void shouldRemoveConversationWhenLastMemberLeft() {
+		// given
+		Member member = stubMember("Member");
+		Conversation conv = stubConversation();
+		conv.join(member);
+
+		// when
+		SignalResponse response = left.execute(member, null, context);
+
+		// then
+		assertNotNull(response);
+		assertFalse(context.getConversations().findBy(conv.getId()).isPresent());
 	}
 
 	private Conversation stubConversation() {

@@ -27,6 +27,8 @@ import org.nextrtc.server.domain.signal.SignalResponse;
 import org.nextrtc.server.exception.MemberNotFoundException;
 import org.nextrtc.server.service.MessageSender;
 
+import com.google.common.base.Optional;
+
 public class NextRTCServerTest {
 
 	@InjectMocks
@@ -103,6 +105,7 @@ public class NextRTCServerTest {
 		Session session = mock(Session.class);
 		DefaultMember member = stubMember("id", "Wladzio");
 		mockMemberDaoFor(member);
+		when(conversations.findBy(member)).thenReturn(Optional.<Conversation> absent());
 		server.register(session);
 
 		// when
