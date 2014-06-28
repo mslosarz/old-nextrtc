@@ -52,13 +52,16 @@ public class NextRTCServer {
 	}
 
 	public void unregister(Session session) {
-		Member member = disconnectMemberFromConversation(session);
+		boolean sessionBoundToMember = memberSession.get(session) != null;
+		if (sessionBoundToMember) {
+			Member member = disconnectMemberFromConversation(session);
 
-		removeMember(member);
+			removeMember(member);
 
-		unbindSession(session);
+			unbindSession(session);
 
-		tryToCloseSession(session);
+			tryToCloseSession(session);
+		}
 	}
 
 	private Member getMemberBy(Session session) {
@@ -94,7 +97,7 @@ public class NextRTCServer {
 	private Member disconnectMemberFromConversation(Session session) {
 		Member member = getMemberBy(session);
 
-		boolean existsConversationWithMember = conversations.findBy(member) != null;
+		boolean existsConversationWithMember = conversations.findBy(member).isPresent();
 
 		if (existsConversationWithMember) {
 			handle(Message.createWith(left).build(), session);

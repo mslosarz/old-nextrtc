@@ -21,4 +21,5 @@ public interface Conversation {
 
 	SignalResponse disconnect(Member member);
 
+	boolean isEmpty();
 }

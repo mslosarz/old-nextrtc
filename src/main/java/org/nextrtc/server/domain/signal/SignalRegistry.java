@@ -204,7 +204,17 @@ public class SignalRegistry {
 
 				Conversation conversation = getConversation(member, requestContext);
 
-				return conversation.disconnect(member);
+				SignalResponse disconnect = conversation.disconnect(member);
+
+				removeEmptyConversation(requestContext, conversation);
+
+				return disconnect;
+			}
+
+			private void removeEmptyConversation(RequestContext requestContext, Conversation conversation) {
+				if (conversation.isEmpty()) {
+					requestContext.getConversations().remove(conversation);
+				}
 			}
 		};
 

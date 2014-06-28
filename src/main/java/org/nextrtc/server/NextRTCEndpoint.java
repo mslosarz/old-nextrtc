@@ -52,8 +52,4 @@ public class NextRTCEndpoint {
 				.withContent(t.getMessage())//
 				.build());
 	}
-
-	public void setServer(NextRTCServer server) {
-		this.server = server;
-	}
 }
