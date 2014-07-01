@@ -7,12 +7,12 @@ import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
-import static org.nextrtc.server.domain.signal.SignalRegistry.DefaultSignal.answerResponse;
-import static org.nextrtc.server.domain.signal.SignalRegistry.DefaultSignal.create;
-import static org.nextrtc.server.domain.signal.SignalRegistry.DefaultSignal.created;
-import static org.nextrtc.server.domain.signal.SignalRegistry.DefaultSignal.join;
-import static org.nextrtc.server.domain.signal.SignalRegistry.DefaultSignal.left;
-import static org.nextrtc.server.domain.signal.SignalRegistry.DefaultSignal.offerResponse;
+import static org.nextrtc.server.domain.signal.DefaultSignal.answerResponse;
+import static org.nextrtc.server.domain.signal.DefaultSignal.create;
+import static org.nextrtc.server.domain.signal.DefaultSignal.created;
+import static org.nextrtc.server.domain.signal.DefaultSignal.join;
+import static org.nextrtc.server.domain.signal.DefaultSignal.left;
+import static org.nextrtc.server.domain.signal.DefaultSignal.offerResponse;
 
 import org.apache.commons.lang3.StringUtils;
 import org.junit.Before;
@@ -27,6 +27,7 @@ import org.nextrtc.server.domain.Message;
 import org.nextrtc.server.domain.RequestContext;
 import org.nextrtc.server.domain.provider.DefaultMember;
 import org.nextrtc.server.exception.ConversationExists;
+import org.nextrtc.server.factory.provider.DefaultConversationFactoryResolver;
 
 public class DefaultSignalsTest {
 
@@ -37,7 +38,8 @@ public class DefaultSignalsTest {
 
 	@Before
 	public void setupContext() {
-		context = new RequestContext(new InMemoryConversations(), new InMemboryMembers());
+		context = new RequestContext(new InMemoryConversations(), new InMemboryMembers(),
+				new DefaultConversationFactoryResolver());
 	}
 
 	@Test
@@ -234,7 +236,9 @@ public class DefaultSignalsTest {
 	}
 
 	private Conversation stubConversation() {
-		return context.getConversations().create();
+		Conversation created = context.getConversationFactoryResolver().getDefaultOrBy(null).create();
+		context.getConversations().add(created);
+		return created;
 	}
 
 	private Member stubMember(String name) {

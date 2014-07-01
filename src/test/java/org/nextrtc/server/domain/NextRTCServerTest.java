@@ -5,8 +5,8 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static org.nextrtc.server.domain.signal.SignalRegistry.DefaultSignal.create;
-import static org.nextrtc.server.domain.signal.SignalRegistry.DefaultSignal.join;
+import static org.nextrtc.server.domain.signal.DefaultSignal.create;
+import static org.nextrtc.server.domain.signal.DefaultSignal.join;
 
 import javax.websocket.Session;
 
@@ -25,6 +25,8 @@ import org.nextrtc.server.domain.provider.DefaultMember;
 import org.nextrtc.server.domain.signal.SenderRequest;
 import org.nextrtc.server.domain.signal.SignalResponse;
 import org.nextrtc.server.exception.MemberNotFoundException;
+import org.nextrtc.server.factory.ConversationFactory;
+import org.nextrtc.server.factory.ConversationFactoryResolver;
 import org.nextrtc.server.service.MessageSender;
 
 import com.google.common.base.Optional;
@@ -43,6 +45,12 @@ public class NextRTCServerTest {
 	@Mock
 	private Members members;
 
+	@Mock
+	private ConversationFactoryResolver resolver;
+
+	@Mock
+	private ConversationFactory factory;
+
 	@Rule
 	public ExpectedException exception = ExpectedException.none();
 
@@ -50,6 +58,8 @@ public class NextRTCServerTest {
 	public void mockDependecy() {
 		server = new NextRTCServer();
 		MockitoAnnotations.initMocks(this);
+		
+		when(resolver.getDefaultOrBy((String) Mockito.anyString())).thenReturn(factory);
 	}
 
 	@Test
@@ -134,7 +144,7 @@ public class NextRTCServerTest {
 
 		// then
 		verify(members).create();
-		verify(conversations).create();
+		verify(conversations).add((Conversation) Mockito.any());
 		verify(sender).send((SenderRequest) Mockito.any());
 	}
 
@@ -144,7 +154,7 @@ public class NextRTCServerTest {
 	}
 
 	private void mockConversationDaoFor(Conversation conv, Member member) {
-		when(conversations.create()).thenReturn(conv);
+		when(factory.create()).thenReturn(conv);
 		when(conversations.findBy(member)).thenReturn(fromNullable(conv));
 		when(conversations.findBy(conv.getId())).thenReturn(fromNullable(conv));
 	}
@@ -155,7 +165,7 @@ public class NextRTCServerTest {
 
 	@After
 	public void resetMocks() {
-		reset(sender, conversations, members);
+		reset(sender, conversations, members, resolver, factory);
 	}
 
 }

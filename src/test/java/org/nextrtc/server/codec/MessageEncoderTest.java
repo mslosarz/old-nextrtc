@@ -5,7 +5,7 @@ import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 import static org.nextrtc.server.domain.Message.createWith;
-import static org.nextrtc.server.domain.signal.SignalRegistry.DefaultSignal.created;
+import static org.nextrtc.server.domain.signal.DefaultSignal.created;
 
 import javax.websocket.EncodeException;
 

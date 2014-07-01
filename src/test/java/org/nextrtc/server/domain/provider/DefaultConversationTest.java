@@ -11,13 +11,13 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.nextrtc.server.domain.Message.createWith;
-import static org.nextrtc.server.domain.signal.SignalRegistry.DefaultSignal.answerRequest;
-import static org.nextrtc.server.domain.signal.SignalRegistry.DefaultSignal.answerResponse;
-import static org.nextrtc.server.domain.signal.SignalRegistry.DefaultSignal.created;
-import static org.nextrtc.server.domain.signal.SignalRegistry.DefaultSignal.finalize;
-import static org.nextrtc.server.domain.signal.SignalRegistry.DefaultSignal.left;
-import static org.nextrtc.server.domain.signal.SignalRegistry.DefaultSignal.offerRequest;
-import static org.nextrtc.server.domain.signal.SignalRegistry.DefaultSignal.offerResponse;
+import static org.nextrtc.server.domain.signal.DefaultSignal.answerRequest;
+import static org.nextrtc.server.domain.signal.DefaultSignal.answerResponse;
+import static org.nextrtc.server.domain.signal.DefaultSignal.created;
+import static org.nextrtc.server.domain.signal.DefaultSignal.finalize;
+import static org.nextrtc.server.domain.signal.DefaultSignal.left;
+import static org.nextrtc.server.domain.signal.DefaultSignal.offerRequest;
+import static org.nextrtc.server.domain.signal.DefaultSignal.offerResponse;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -39,14 +39,14 @@ public class DefaultConversationTest {
 
 	@Before
 	public void setupConversation() {
-		conv = new DefaultConversation();
+		conv = new ChatConversation();
 	}
 
 	@Test
 	public void shouldHaveOwhId() {
 		// given
-		Conversation c1 = new DefaultConversation();
-		Conversation c2 = new DefaultConversation();
+		Conversation c1 = new ChatConversation();
+		Conversation c2 = new ChatConversation();
 
 		// when
 		String id1 = c1.getId();

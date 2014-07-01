@@ -4,7 +4,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static org.nextrtc.server.domain.signal.SignalRegistry.DefaultSignal.create;
+import static org.nextrtc.server.domain.signal.DefaultSignal.create;
 
 import javax.websocket.RemoteEndpoint.Async;
 import javax.websocket.Session;

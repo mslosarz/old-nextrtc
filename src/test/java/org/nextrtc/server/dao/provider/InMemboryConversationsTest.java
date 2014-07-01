@@ -12,12 +12,16 @@ import org.nextrtc.server.dao.Conversations;
 import org.nextrtc.server.domain.Conversation;
 import org.nextrtc.server.domain.Member;
 import org.nextrtc.server.domain.provider.DefaultMember;
+import org.nextrtc.server.factory.ConversationFactory;
+import org.nextrtc.server.factory.ConversationTypes;
 
 import com.google.common.base.Optional;
 
 public class InMemboryConversationsTest {
 	
 	private Conversations container;
+
+	private ConversationFactory factory = ConversationTypes.chat.getFactory();
 
 	@Before
 	public void setupConversation() {
@@ -29,7 +33,7 @@ public class InMemboryConversationsTest {
 		// given
 
 		// when
-		Conversation created = container.create();
+		Conversation created = factory.create();
 
 		// then
 		assertNotNull(created);
@@ -38,7 +42,8 @@ public class InMemboryConversationsTest {
 	@Test
 	public void shouldCreateAndFindConversation() {
 		// given
-		Conversation created = container.create();
+		Conversation created = factory.create();
+		container.add(created);
 
 		// when
 		Optional<Conversation> found = container.findBy(created.getId());
@@ -74,7 +79,8 @@ public class InMemboryConversationsTest {
 	@Test
 	public void shouldFindConversationByMember() {
 		// given
-		Conversation created = container.create();
+		Conversation created = factory.create();
+		container.add(created);
 		Member member = new DefaultMember("qwer-ty", "Wladzio");
 		created.join(member);
 
@@ -89,7 +95,8 @@ public class InMemboryConversationsTest {
 	@Test
 	public void shouldReturnNullForNullMemberParameter() {
 		// given
-		Conversation created = container.create();
+		Conversation created = factory.create();
+		container.add(created);
 		Member member = new DefaultMember("qwer-ty", "Wladzio");
 		created.join(member);
 		Member nullMember = null;
@@ -104,7 +111,8 @@ public class InMemboryConversationsTest {
 	@Test
 	public void shouldRemoveExistingConversation() {
 		// given
-		Conversation conv = container.create();
+		Conversation conv = factory.create();
+		container.add(conv);
 
 		// when
 		container.remove(conv);
@@ -117,7 +125,8 @@ public class InMemboryConversationsTest {
 	@Test
 	public void removeShouldWorkForNullParameter() {
 		// given
-		Conversation conv = container.create();
+		Conversation conv = factory.create();
+		container.add(conv);
 
 		// when
 		container.remove(null);
