@@ -1,11 +1,11 @@
 package org.nextrtc.server.domain.provider;
 
 import static java.util.Collections.synchronizedSet;
-import static org.nextrtc.server.domain.signal.SignalRegistry.DefaultSignal.answerRequest;
-import static org.nextrtc.server.domain.signal.SignalRegistry.DefaultSignal.created;
-import static org.nextrtc.server.domain.signal.SignalRegistry.DefaultSignal.finalize;
-import static org.nextrtc.server.domain.signal.SignalRegistry.DefaultSignal.left;
-import static org.nextrtc.server.domain.signal.SignalRegistry.DefaultSignal.offerRequest;
+import static org.nextrtc.server.domain.signal.DefaultSignal.answerRequest;
+import static org.nextrtc.server.domain.signal.DefaultSignal.created;
+import static org.nextrtc.server.domain.signal.DefaultSignal.finalize;
+import static org.nextrtc.server.domain.signal.DefaultSignal.left;
+import static org.nextrtc.server.domain.signal.DefaultSignal.offerRequest;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -18,16 +18,16 @@ import org.nextrtc.server.domain.Message;
 import org.nextrtc.server.domain.signal.SignalResponse;
 import org.nextrtc.server.exception.MemberNotFoundException;
 
-public class DefaultConversation implements Conversation {
+public class ChatConversation implements Conversation {
 
 	private Set<Member> members = synchronizedSet(new HashSet<Member>());
 	private String id;
 
-	public DefaultConversation() {
+	public ChatConversation() {
 		this.id = UUID.randomUUID().toString();
 	}
 
-	public DefaultConversation(String id) {
+	public ChatConversation(String id) {
 		if (StringUtils.isEmpty(id)) {
 			throw new IllegalArgumentException("Conversation id must be set.");
 		}

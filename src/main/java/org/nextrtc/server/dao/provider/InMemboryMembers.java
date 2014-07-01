@@ -1,7 +1,9 @@
 package org.nextrtc.server.dao.provider;
 
+import static java.util.Collections.synchronizedSet;
+
+import java.util.HashSet;
 import java.util.Set;
-import java.util.concurrent.CopyOnWriteArraySet;
 
 import org.nextrtc.server.dao.Members;
 import org.nextrtc.server.domain.Member;
@@ -15,7 +17,7 @@ import com.google.common.base.Optional;
 @Scope("singleton")
 public class InMemboryMembers implements Members {
 
-	private Set<Member> defaultMembers = new CopyOnWriteArraySet<>();
+	private Set<Member> defaultMembers = synchronizedSet(new HashSet<Member>());
 
 	@Override
 	public Member create() {

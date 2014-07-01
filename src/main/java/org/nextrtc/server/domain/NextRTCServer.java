@@ -1,6 +1,6 @@
 package org.nextrtc.server.domain;
 
-import static org.nextrtc.server.domain.signal.SignalRegistry.DefaultSignal.left;
+import static org.nextrtc.server.domain.signal.DefaultSignal.left;
 
 import java.io.IOException;
 
@@ -13,6 +13,7 @@ import org.nextrtc.server.domain.signal.SenderRequest;
 import org.nextrtc.server.domain.signal.SignalResponse;
 import org.nextrtc.server.exception.MemberNotFoundException;
 import org.nextrtc.server.exception.SessionCloseException;
+import org.nextrtc.server.factory.ConversationFactoryResolver;
 import org.nextrtc.server.service.MessageSender;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
@@ -35,6 +36,9 @@ public class NextRTCServer {
 
 	@Autowired
 	private MessageSender messageSender;
+
+	@Autowired
+	private ConversationFactoryResolver conversationFactoryResolver;
 
 	private final BiMap<Session, String> memberSession = Maps.synchronizedBiMap(//
 			HashBiMap.<Session, String> create());
@@ -81,7 +85,7 @@ public class NextRTCServer {
 		SignalResponse messages = message.getSignal().execute(//
 				member,//
 				message,//
-				new RequestContext(conversations, members)//
+				new RequestContext(conversations, members, conversationFactoryResolver)//
 				);
 		return messages;
 	}

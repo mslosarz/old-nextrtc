@@ -1,12 +1,13 @@
 package org.nextrtc.server.dao.provider;
 
+import static java.util.Collections.synchronizedSet;
+
+import java.util.HashSet;
 import java.util.Set;
-import java.util.concurrent.CopyOnWriteArraySet;
 
 import org.nextrtc.server.dao.Conversations;
 import org.nextrtc.server.domain.Conversation;
 import org.nextrtc.server.domain.Member;
-import org.nextrtc.server.domain.provider.DefaultConversation;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
@@ -16,20 +17,11 @@ import com.google.common.base.Optional;
 @Scope("singleton")
 public class InMemoryConversations implements Conversations {
 
-	private Set<Conversation> conversations = new CopyOnWriteArraySet<>();
+	private Set<Conversation> conversations = synchronizedSet(new HashSet<Conversation>());
 
 	@Override
-	public Conversation create() {
-		Conversation conv = new DefaultConversation();
-		conversations.add(conv);
-		return conv;
-	}
-
-	@Override
-	public Conversation create(String id) {
-		Conversation conv = new DefaultConversation(id);
-		conversations.add(conv);
-		return conv;
+	public void add(Conversation conversation) {
+		conversations.add(conversation);
 	}
 
 	@Override
@@ -60,5 +52,4 @@ public class InMemoryConversations implements Conversations {
 	public void remove(Conversation conversation) {
 		conversations.remove(conversation);
 	}
-
 }

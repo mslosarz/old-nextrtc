@@ -7,9 +7,7 @@ import com.google.common.base.Optional;
 
 public interface Conversations {
 
-	Conversation create();
-
-	Conversation create(String conversationId);
+	void add(Conversation conversation);
 
 	Optional<Conversation> findBy(String conversationId);
 

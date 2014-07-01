@@ -4,6 +4,7 @@ import static org.apache.commons.lang3.StringUtils.EMPTY;
 
 import org.nextrtc.server.domain.signal.Signal;
 import org.nextrtc.server.domain.signal.SignalRegistry;
+import org.nextrtc.server.factory.ConversationTypes;
 
 import com.google.gson.GsonBuilder;
 import com.google.gson.annotations.Expose;
@@ -26,6 +27,9 @@ public class Message {
 	@Expose
 	private String content = EMPTY;
 
+	@Expose
+	private String type = EMPTY;
+
 	public Signal getSignal() {
 		return SignalRegistry.get(signal);
 	}
@@ -40,6 +44,10 @@ public class Message {
 
 	public String getMemberId() {
 		return member != null ? member.getId() : EMPTY;
+	}
+
+	public String getType() {
+		return type;
 	}
 
 	@Override
@@ -106,6 +114,11 @@ public class Message {
 
 		public MessageBuilder withMember(Member member) {
 			message.member = new MessageMember(member);
+			return this;
+		}
+
+		public MessageBuilder withType(ConversationTypes type) {
+			message.type = type.name();
 			return this;
 		}
 
