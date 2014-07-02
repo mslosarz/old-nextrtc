@@ -48,6 +48,7 @@ public class NextRTCEndpoint {
 
 	@OnError
 	public void onError(Session session, Throwable t) {
+		t.printStackTrace();
 		session.getAsyncRemote().sendObject(Message.createWith("error")//
 				.withContent(t.getMessage())//
 				.build());

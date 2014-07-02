@@ -3,7 +3,7 @@ package org.nextrtc.server.factory;
 
 public enum ConversationTypes {
 	broadcast(new BroadcastConversationFactory()), //
-	chat(new ChatConversationFactory());
+	mesh(new MeshConversationFactory());
 
 	private ConversationFactory factory;
 

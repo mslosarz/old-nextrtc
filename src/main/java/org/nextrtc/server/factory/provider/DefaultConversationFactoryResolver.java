@@ -17,7 +17,7 @@ public class DefaultConversationFactoryResolver implements ConversationFactoryRe
 
 	private Map<String, ConversationFactory> factories = synchronizedMap(new HashMap<String, ConversationFactory>());
 
-	private ConversationFactory defaultFactory = ConversationTypes.chat.getFactory();
+	private ConversationFactory defaultFactory = ConversationTypes.mesh.getFactory();
 	
 	public DefaultConversationFactoryResolver() {
 		for (ConversationTypes type : ConversationTypes.values()) {

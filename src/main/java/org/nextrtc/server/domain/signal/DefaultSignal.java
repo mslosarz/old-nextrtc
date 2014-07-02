@@ -101,9 +101,6 @@ public enum DefaultSignal implements Signal {
 
 			Optional<Conversation> conversation = fetchConversationBy(message, requestContext);
 
-			if (conversation.isPresent() == false) {
-				return create.execute(member, message, requestContext);
-			}
 			return conversation.get().join(member);
 		}
 

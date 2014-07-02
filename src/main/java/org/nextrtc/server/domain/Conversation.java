@@ -15,8 +15,6 @@ public interface Conversation {
 
 	SignalResponse routeAnswer(Member from, Message answer);
 
-	SignalResponse broadcast(Message message);
-
 	boolean has(Member member);
 
 	SignalResponse disconnect(Member member);

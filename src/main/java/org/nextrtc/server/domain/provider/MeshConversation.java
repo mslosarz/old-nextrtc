@@ -1,56 +1,28 @@
 package org.nextrtc.server.domain.provider;
 
-import static java.util.Collections.synchronizedSet;
 import static org.nextrtc.server.domain.signal.DefaultSignal.answerRequest;
 import static org.nextrtc.server.domain.signal.DefaultSignal.created;
 import static org.nextrtc.server.domain.signal.DefaultSignal.finalize;
 import static org.nextrtc.server.domain.signal.DefaultSignal.left;
 import static org.nextrtc.server.domain.signal.DefaultSignal.offerRequest;
 
-import java.util.HashSet;
-import java.util.Set;
-import java.util.UUID;
-
-import org.apache.commons.lang3.StringUtils;
 import org.nextrtc.server.domain.Conversation;
 import org.nextrtc.server.domain.Member;
 import org.nextrtc.server.domain.Message;
 import org.nextrtc.server.domain.signal.SignalResponse;
-import org.nextrtc.server.exception.MemberNotFoundException;
 
-public class ChatConversation implements Conversation {
+public class MeshConversation extends AbstractConversation implements Conversation {
 
-	private Set<Member> members = synchronizedSet(new HashSet<Member>());
-	private String id;
-
-	public ChatConversation() {
-		this.id = UUID.randomUUID().toString();
+	public MeshConversation() {
+		super();
 	}
 
-	public ChatConversation(String id) {
-		if (StringUtils.isEmpty(id)) {
-			throw new IllegalArgumentException("Conversation id must be set.");
-		}
-		this.id = id;
-	}
-
-	public SignalResponse broadcast(Message message) {
-		SignalResponse signalResponse = new SignalResponse(message);
-		signalResponse.addAll(members);
-		return signalResponse;
+	public MeshConversation(String id) {
+		super(id);
 	}
 
 	@Override
-	public SignalResponse disconnect(Member leaving) {
-		members.remove(leaving);
-		return broadcast(Message//
-				.createWith(left)//
-				.withMember(leaving)//
-				.build());
-	}
-
-	@Override
-	public SignalResponse joinOwner(Member owner) {
+	public synchronized SignalResponse joinOwner(Member owner) {
 		members.add(owner);
 
 		Message response = Message//
@@ -61,7 +33,7 @@ public class ChatConversation implements Conversation {
 		return broadcast(response);
 	}
 
-	public SignalResponse join(Member member) {
+	public synchronized SignalResponse join(Member member) {
 		Message message = Message//
 				.createWith(offerRequest)//
 				.withMember(member)//
@@ -97,25 +69,13 @@ public class ChatConversation implements Conversation {
 		return new SignalResponse(message, member);
 	}
 
-	public boolean has(Member member) {
-		return members.contains(member);
-	}
-
-	public String getId() {
-		return id;
-	}
-
-	private Member findById(String memberId) {
-		for (Member member : members) {
-			if (memberId.equals(member.getId())) {
-				return member;
-			}
-		}
-		throw new MemberNotFoundException();
-	}
-
-	public boolean isEmpty() {
-		return members.isEmpty();
+	@Override
+	public SignalResponse disconnect(Member leaving) {
+		members.remove(leaving);
+		return broadcast(Message//
+				.createWith(left)//
+				.withMember(leaving)//
+				.build());
 	}
 
 }

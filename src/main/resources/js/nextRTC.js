@@ -8,10 +8,11 @@ function Member(name) {
 	this.name = name;
 };
 
-function Message(signal, member, content) {
+function Message(signal, member, content, type) {
 	this.signal = signal;
 	this.member = member;
 	this.content = content;
+	this.type = type;
 };
 
 function NextRTC(config) {
@@ -25,9 +26,11 @@ function NextRTC(config) {
 	this.signaling = new WebSocket(config.wsURL);
 	this.peerConnections = {};
 	this.mediaConfig = config.mediaConfig;
-	this.mediaAutoRequest = config.mediaAutoRequest !== undefined ? config.mediaAutoRequest	: true;
+	this.mediaAutoRequest = config.mediaAutoRequest !== undefined ? config.mediaAutoRequest
+			: true;
 	this.signals = {};
 	this.localStream = null;
+	this.type = config.type;
 
 	this.on = function(signal, operation) {
 		this.signals[signal] = operation;
@@ -41,24 +44,46 @@ function NextRTC(config) {
 		}
 		console.log('Event ' + event + ' do not have defined function');
 	};
-
+	
 	this.join = function(member, convId) {
 		var nextRTC = this;
 		if (this.mediaAutoRequest) {
 			navigator.getUserMedia(nextRTC.mediaConfig, function(stream) {
 				nextRTC.localStream = stream;
-				nextRTC.call('localStream', {stream : stream});
-				nextRTC.request('join', member, convId);
+				nextRTC.call('localStream', {
+					stream : stream
+				});
+				nextRTC.request('join', member, convId, nextRTC.type);
 			}, error);
+		} else if(nextRTC.localStream == null) {
+			console.log('You should provide NextRTC.instance.localStream before call this method');
 		} else {
-			console.log('You should override method on(mediaRequest) to provide NextRTC.instance.localStream');
+			nextRTC.request('join', member, convId, nextRTC.type);
 		}
 	};
-	
-	this.request = function(signal, member, convId) {
-		this.signaling.send(JSON.stringify(new Message(signal, member, convId)));
+
+	this.create = function(member, convId) {
+		var nextRTC = this;
+		if (this.mediaAutoRequest) {
+			navigator.getUserMedia(nextRTC.mediaConfig, function(stream) {
+				nextRTC.localStream = stream;
+				nextRTC.call('localStream', {
+					stream : stream
+				});
+				nextRTC.request('create', member, convId, nextRTC.type);
+			}, error);
+		}  else if(nextRTC.localStream == null) {
+			console.log('You should provide NextRTC.instance.localStream before call this method');
+		} else {
+			nextRTC.request('create', member, convId, nextRTC.type);
+		}
 	};
-	
+
+	this.request = function(signal, member, convId, type) {
+		this.signaling.send(JSON.stringify(new Message(signal, member, convId,
+				type)));
+	};
+
 	this.signaling.onmessage = function(event) {
 		var signal = JSON.parse(event.data);
 		NextRTC.instance.call(signal.signal, signal);
@@ -71,23 +96,26 @@ function NextRTC(config) {
 	this.signaling.onerror = function(event) {
 		NextRTC.instance.call('error', event);
 	};
-	
+
 	this.preparePeerConnection = function(nextRTC, member) {
-		if(nextRTC.peerConnections[member.id] === undefined){
+		if (nextRTC.peerConnections[member.id] === undefined) {
 			var pc = new RTCPeerConnection(config.peerConfig);
 			pc.onaddstream = function(evt) {
-				nextRTC.call('remoteStream', {member : member, stream : evt.stream});
+				nextRTC.call('remoteStream', {
+					member : member,
+					stream : evt.stream
+				});
 			};
 			nextRTC.peerConnections[member.id] = pc;
 		}
 		return nextRTC.peerConnections[member.id];
 	};
-	
+
 	this.offerRequest = function(nextRTC, from) {
 		nextRTC.preparePeerConnection(nextRTC, from.member);
 		nextRTC.offerResponse(nextRTC, from);
 	};
-	
+
 	this.offerResponse = function(nextRTC, signal) {
 		var pc = nextRTC.preparePeerConnection(nextRTC, signal.member);
 		pc.addStream(nextRTC.localStream);
@@ -96,37 +124,35 @@ function NextRTC(config) {
 			nextRTC.request('offerResponse', signal.member, desc.sdp);
 		}, error);
 	};
-	
+
 	this.answerRequest = function(nextRTC, signal) {
 		nextRTC.preparePeerConnection(nextRTC, signal.member.id);
 		nextRTC.answerResponse(nextRTC, signal);
 	};
-	
+
 	this.answerResponse = function(nextRTC, signal) {
 		var pc = nextRTC.preparePeerConnection(nextRTC, signal.member);
 		pc.addStream(nextRTC.localStream);
-		pc.setRemoteDescription(
-				new RTCSessionDescription({
-					type : 'offer',
-					sdp : signal.content
-				}), 
-				function() {
-					pc.createAnswer(function(desc) {
-						pc.setLocalDescription(desc);
-						nextRTC.request('answerResponse', signal.member, desc.sdp);
+		pc.setRemoteDescription(new RTCSessionDescription({
+			type : 'offer',
+			sdp : signal.content
+		}), function() {
+			pc.createAnswer(function(desc) {
+				pc.setLocalDescription(desc);
+				nextRTC.request('answerResponse', signal.member, desc.sdp);
 			}, error);
 		});
 	};
-	
-	this.finalize = function(nextRTC, signal){
+
+	this.finalize = function(nextRTC, signal) {
 		var pc = nextRTC.preparePeerConnection(nextRTC, signal.member);
 		pc.setRemoteDescription(new RTCSessionDescription({
 			type : 'answer',
 			sdp : signal.content
 		}));
 	};
-	
-	this.close = function(nextRTC, event){
+
+	this.close = function(nextRTC, event) {
 		nextRTC.signaling.close();
 	};
 
@@ -157,4 +183,3 @@ if (document.addEventListener) {
 var error = function(error) {
 	console.log('error ' + error);
 };
-
