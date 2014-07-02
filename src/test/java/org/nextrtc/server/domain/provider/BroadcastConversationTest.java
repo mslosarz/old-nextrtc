@@ -1,11 +1,10 @@
 package org.nextrtc.server.domain.provider;
 
 import static org.hamcrest.Matchers.contains;
-import static org.hamcrest.Matchers.containsInAnyOrder;
+import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isEmptyOrNullString;
 import static org.hamcrest.Matchers.not;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
@@ -28,9 +27,8 @@ import org.nextrtc.server.domain.Member;
 import org.nextrtc.server.domain.Message;
 import org.nextrtc.server.domain.signal.Signal;
 import org.nextrtc.server.domain.signal.SignalResponse;
-import org.nextrtc.server.exception.MemberNotFoundException;
 
-public class DefaultConversationTest {
+public class BroadcastConversationTest {
 
 	private Conversation conv;
 
@@ -39,62 +37,61 @@ public class DefaultConversationTest {
 
 	@Before
 	public void setupConversation() {
-		conv = new ChatConversation();
+		conv = new BroadcastConversation();
 	}
 
 	@Test
-	public void shouldHaveOwhId() {
-		// given
-		Conversation c1 = new ChatConversation();
-		Conversation c2 = new ChatConversation();
-
-		// when
-		String id1 = c1.getId();
-		String id2 = c2.getId();
-
-		// then
-		assertNotNull(id1);
-		assertNotNull(id2);
-		assertThat(id1, is(not(id2)));
-	}
-
-	@Test
-	public void shouldAllowToAddNewMember() {
+	public void shouldNotAllowToAddNewMemberWithoutBroadcaster() {
 		// given
 		Member member = mock(Member.class);
 
+		// then
+		exception.expectMessage(containsString("This conversation doesn't have owner!"));
+
 		// when
 		conv.join(member);
-
-		// then
-		assertTrue(conv.has(member));
 	}
 
 	@Test
-	public void shouldSendConversationCreatedForJoinOwnerToConversation() {
+	public void shouldAllowToAddNewMemberWhenBroadcasterIsPresent() {
 		// given
-		Member owner = mock(Member.class);
+		Member broadcaster = mock(Member.class);
+		Member listener = mock(Member.class);
+		conv.joinOwner(broadcaster);
 
 		// when
-		SignalResponse response = conv.joinOwner(owner);
+		conv.join(listener);
+
+		// then
+		assertTrue(conv.has(broadcaster));
+		assertTrue(conv.has(listener));
+	}
+
+	@Test
+	public void shouldSendConversationNameToBroadcaster() {
+		// given
+		Member broadcaster = mock(Member.class);
+
+		// when
+		SignalResponse response = conv.joinOwner(broadcaster);
 
 		// then
 		Message message = response.getMessage();
 
 		assertThat(message.getSignal(), is((Signal) created));
 		assertThat(message.getContent(), is(conv.getId()));
-		assertThat(response.getRecipients(), contains(owner));
+		assertThat(response.getRecipients(), contains(broadcaster));
 	}
 
 	@Test
-	public void shouldSendOfferRequestFromNewMemberToOwner() {
+	public void shouldSendOfferRequestFromListenerToBroadcaster() {
 		// given
-		Member owner = mock(Member.class);
-		Member member = mockMember("id", "Wladzio");
-		conv.joinOwner(owner);
+		Member broadcaster = mock(Member.class);
+		Member listener = mockMember("id", "Wladzio");
+		conv.joinOwner(broadcaster);
 
 		// when
-		SignalResponse response = conv.join(member);
+		SignalResponse response = conv.join(listener);
 
 		// then
 		Message message = response.getMessage();
@@ -103,19 +100,19 @@ public class DefaultConversationTest {
 		assertThat(message.getContent(), isEmptyOrNullString());
 		assertThat(message.getMemberId(), is("id"));
 		assertThat(message.getMemberName(), is("Wladzio"));
-		assertThat(response.getRecipients(), contains(owner));
-		assertThat(response.getRecipients(), not(contains(member)));
+		assertThat(response.getRecipients(), contains(broadcaster));
+		assertThat(response.getRecipients(), not(contains(listener)));
 	}
 
 	@Test
-	public void shouldSendOfferRequestFromNewMemberToOwnerAndOtherMembers() {
+	public void shouldSendOfferRequestFromListenerToBroadcasterOnly() {
 		// given
-		Member owner = mock(Member.class);
-		Member member = mockMember("id", "Wladzio");
+		Member broadcaster = mock(Member.class);
+		Member existing = mockMember("id", "Wladzio");
 		Member joining = mockMember("joining", "Stefan");
 
-		conv.joinOwner(owner);
-		conv.join(member);
+		conv.joinOwner(broadcaster);
+		conv.join(existing);
 
 		// when
 		SignalResponse response = conv.join(joining);
@@ -127,7 +124,8 @@ public class DefaultConversationTest {
 		assertThat(message.getContent(), isEmptyOrNullString());
 		assertThat(message.getMemberId(), is("joining"));
 		assertThat(message.getMemberName(), is("Stefan"));
-		assertThat(response.getRecipients(), containsInAnyOrder(member, owner));
+		assertThat(response.getRecipients(), contains(broadcaster));
+		assertThat(response.getRecipients(), not(contains(existing)));
 		assertThat(response.getRecipients(), not(contains(joining)));
 	}
 
@@ -135,15 +133,15 @@ public class DefaultConversationTest {
 	public void shouldSendAnswerRequestOnOfferResponseWithValidSenderAndReceiver() {
 		// given
 		Member mock = mock(Member.class);
-		Member member = mockMember("id", "Wladzio");
+		Member broadcaster = mockMember("id", "Wladzio");
 		Member joining = mockMember("joining", "Stefan");
 
-		conv.joinOwner(member);
+		conv.joinOwner(broadcaster);
 		conv.join(joining);
 		conv.join(mock);
 
 		// when
-		SignalResponse response = conv.routeOffer(member, //
+		SignalResponse response = conv.routeOffer(broadcaster, //
 				createWith(offerResponse)//
 						.withMember(joining)//
 						.withContent("local Wladzio sdp")//
@@ -157,23 +155,24 @@ public class DefaultConversationTest {
 		assertThat(message.getMemberId(), is("id"));
 		assertThat(message.getMemberName(), is("Wladzio"));
 		assertThat(response.getRecipients(), contains(joining));
+		assertThat(response.getRecipients(), not(contains(mock)));
 	}
 
 	@Test
 	public void shouldSendOnOfferResponseWithValidSenderAndReceiver() {
 		// given
 		Member mock = mock(Member.class);
-		Member member = mockMember("id", "Wladzio");
+		Member broadcaster = mockMember("id", "Wladzio");
 		Member joining = mockMember("joining", "Stefan");
 
-		conv.joinOwner(member);
+		conv.joinOwner(broadcaster);
 		conv.join(joining);
 		conv.join(mock);
 
 		// when
 		SignalResponse response = conv.routeAnswer(joining, //
 				createWith(answerResponse)//
-						.withMember(member)//
+						.withMember(broadcaster)//
 						.withContent("local Stefan sdp")//
 						.build());
 
@@ -184,35 +183,19 @@ public class DefaultConversationTest {
 		assertThat(message.getContent(), is("local Stefan sdp"));
 		assertThat(message.getMemberId(), is("joining"));
 		assertThat(message.getMemberName(), is("Stefan"));
-		assertThat(response.getRecipients(), contains(member));
+		assertThat(response.getRecipients(), contains(broadcaster));
+		assertThat(response.getRecipients(), not(contains(joining)));
+		assertThat(response.getRecipients(), not(contains(mock)));
 	}
 
 	@Test
-	public void shouldThrowExceptionIfInvalidMemberIdOccurOnRequest() {
+	public void shouldInformBroadcasterAboutSomeonesLeave() {
 		// given
-		Member member = mockMember("id", "Wladzio");
-		Member invalid = mockMember("invalid", "Andrzej");
-		conv.joinOwner(member);
-
-		// then
-		exception.expect(MemberNotFoundException.class);
-
-		// when
-		conv.routeAnswer(member, //
-				createWith(answerResponse)//
-						.withMember(invalid)//
-						.withContent("local Wladzio sdp")//
-						.build());
-	}
-
-	@Test
-	public void shouldInformEveryoneOfSomeoneLeave() {
-		// given
-		Member member = mockMember("id", "Wladzio");
-		Member member2 = mockMember("id2", "Piotr");
+		Member broadcaster = mockMember("id", "Wladzio");
+		Member member = mockMember("id2", "Piotr");
 		Member leaving = mockMember("leaving", "Karolina");
-		conv.joinOwner(member);
-		conv.join(member2);
+		conv.joinOwner(broadcaster);
+		conv.join(member);
 		conv.join(leaving);
 
 		// when
@@ -225,7 +208,9 @@ public class DefaultConversationTest {
 		assertThat(message.getContent(), isEmptyOrNullString());
 		assertThat(message.getMemberId(), is("leaving"));
 		assertThat(message.getMemberName(), is("Karolina"));
-		assertThat(response.getRecipients(), containsInAnyOrder(member, member2));
+		assertThat(response.getRecipients(), contains(broadcaster));
+		assertThat(response.getRecipients(), not(contains(member)));
+
 	}
 
 	private Member mockMember(String id, String name) {

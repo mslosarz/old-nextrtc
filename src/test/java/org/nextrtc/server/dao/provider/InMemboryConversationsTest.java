@@ -21,7 +21,7 @@ public class InMemboryConversationsTest {
 	
 	private Conversations container;
 
-	private ConversationFactory factory = ConversationTypes.chat.getFactory();
+	private ConversationFactory factory = ConversationTypes.mesh.getFactory();
 
 	@Before
 	public void setupConversation() {

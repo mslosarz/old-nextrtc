@@ -1,15 +1,12 @@
 package org.nextrtc.server.domain.signal;
 
-import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isEmptyOrNullString;
-import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 import static org.nextrtc.server.domain.signal.DefaultSignal.answerResponse;
 import static org.nextrtc.server.domain.signal.DefaultSignal.create;
-import static org.nextrtc.server.domain.signal.DefaultSignal.created;
 import static org.nextrtc.server.domain.signal.DefaultSignal.join;
 import static org.nextrtc.server.domain.signal.DefaultSignal.left;
 import static org.nextrtc.server.domain.signal.DefaultSignal.offerResponse;
@@ -105,46 +102,6 @@ public class DefaultSignalsTest {
 		// then
 		assertNotNull(response);
 		assertThat(member.getName(), is("Joining"));
-	}
-
-	@Test
-	public void shouldCreateConversationWhenRequestedJoinWithoutId() {
-		// given
-		Member member = stubMember(null);
-		Message message = Message.createWith(join)//
-				.withMember(new DefaultMember(member.getId(), "Creating"))//
-				.withContent(null)//
-				.build();
-
-		// when
-		SignalResponse response = join.execute(member, message, context);
-
-		// then
-		assertNotNull(response);
-		Message responseMessage = response.getMessage();
-		assertThat(responseMessage.getContent(), not(isEmptyOrNullString()));
-		assertThat(responseMessage.getSignal(), is((Signal) created));
-		assertThat(response.getRecipients(), contains(member));
-	}
-
-	@Test
-	public void shouldCreateConversationWithGivenIdWhenConversationDoNotExists() {
-		// given
-		Member member = stubMember(null);
-		Message message = Message.createWith(join)//
-				.withMember(new DefaultMember(member.getId(), "Creating"))//
-				.withContent("my-conversation-name")//
-				.build();
-
-		// when
-		SignalResponse response = join.execute(member, message, context);
-
-		// then
-		assertNotNull(response);
-		Message responseMessage = response.getMessage();
-		assertThat(responseMessage.getContent(), is("my-conversation-name"));
-		assertThat(responseMessage.getSignal(), is((Signal) created));
-		assertThat(response.getRecipients(), contains(member));
 	}
 
 	@Test
