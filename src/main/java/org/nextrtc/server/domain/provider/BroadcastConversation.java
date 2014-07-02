@@ -1,6 +1,6 @@
 package org.nextrtc.server.domain.provider;
 
-import static com.google.common.base.Preconditions.checkNotNull;
+import static com.google.common.base.Preconditions.checkArgument;
 import static org.nextrtc.server.domain.signal.DefaultSignal.answerRequest;
 import static org.nextrtc.server.domain.signal.DefaultSignal.created;
 import static org.nextrtc.server.domain.signal.DefaultSignal.finalize;
@@ -12,9 +12,11 @@ import org.nextrtc.server.domain.Member;
 import org.nextrtc.server.domain.Message;
 import org.nextrtc.server.domain.signal.SignalResponse;
 
+import com.google.common.base.Optional;
+
 public class BroadcastConversation extends AbstractConversation implements Conversation {
 
-	private Member owner;
+	private Optional<Member> owner = Optional.<Member> absent();
 
 	public BroadcastConversation() {
 		super();
@@ -26,7 +28,7 @@ public class BroadcastConversation extends AbstractConversation implements Conve
 
 	@Override
 	public synchronized SignalResponse joinOwner(Member owner) {
-		this.owner = owner;
+		this.owner = Optional.<Member> of(owner);
 
 		Message response = Message//
 				.createWith(created)//
@@ -38,7 +40,7 @@ public class BroadcastConversation extends AbstractConversation implements Conve
 
 	@Override
 	public synchronized SignalResponse join(Member member) {
-		checkNotNull(owner, "This conversation doesn't have owner!");
+		checkArgument(owner.isPresent(), "This conversation doesn't have owner!");
 
 		Message message = Message//
 				.createWith(offerRequest)//
@@ -47,7 +49,7 @@ public class BroadcastConversation extends AbstractConversation implements Conve
 
 		members.add(member);
 
-		return new SignalResponse(message, owner);
+		return new SignalResponse(message, owner.get());
 	}
 
 	@Override
@@ -56,7 +58,7 @@ public class BroadcastConversation extends AbstractConversation implements Conve
 
 		Message message = Message//
 				.createWith(answerRequest)//
-				.withMember(owner)//
+				.withMember(owner.get())//
 				.withContent(offer.getContent())//
 				.build();
 
@@ -71,38 +73,44 @@ public class BroadcastConversation extends AbstractConversation implements Conve
 				.withContent(answer.getContent())//
 				.build();
 
-		return new SignalResponse(message, owner);
+		return new SignalResponse(message, owner.get());
 	}
 
 	@Override
 	public SignalResponse disconnect(Member leaving) {
 		members.remove(leaving);
-		if (leaving.equals(owner)) {
-			return informAll();
+		if (owner.get().equals(leaving)) {
+			SignalResponse informAll = informAll();
+			owner = Optional.<Member> absent();
+			members.clear();
+			return informAll;
 		}
 		return informOwnerAbout(leaving);
 	}
 
 	@Override
 	public boolean has(Member member) {
-		boolean isOwner = false;
-		if(member != null){
-			isOwner = member.equals(owner);
+		return super.has(member) || isOwner(member);
+	}
+
+	private boolean isOwner(Member member) {
+		if (owner.isPresent()) {
+			return owner.get().equals(member);
 		}
-		return super.has(member) || isOwner;
+		return false;
 	}
 
 	private SignalResponse informOwnerAbout(Member leaving) {
 		return new SignalResponse(Message//
 				.createWith(left)//
 				.withMember(leaving)//
-				.build(), owner);
+				.build(), owner.get());
 	}
 
 	private SignalResponse informAll() {
 		return broadcast(Message//
 				.createWith(left)//
-				.withMember(owner)//
+				.withMember(owner.get())//
 				.build());
 	}
 
