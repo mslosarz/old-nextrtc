@@ -1,10 +1,12 @@
 package org.nextrtc.server.domain.provider;
 
 import static org.hamcrest.Matchers.contains;
+import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isEmptyOrNullString;
 import static org.hamcrest.Matchers.not;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
@@ -211,6 +213,32 @@ public class BroadcastConversationTest {
 		assertThat(response.getRecipients(), contains(broadcaster));
 		assertThat(response.getRecipients(), not(contains(member)));
 
+	}
+
+	@Test
+	public void shouldDisconnectAllListenersOnLeaveBroadcaster() {
+		// given
+		Member broadcaster = mockMember("id", "Wladzio");
+		Member member = mockMember("id2", "Piotr");
+		Member member2 = mockMember("leaving", "Karolina");
+		conv.joinOwner(broadcaster);
+		conv.join(member);
+		conv.join(member2);
+
+		// when
+		SignalResponse response = conv.disconnect(broadcaster);
+
+		// then
+		Message message = response.getMessage();
+
+		assertThat(message.getSignal(), is((Signal) left));
+		assertThat(message.getContent(), isEmptyOrNullString());
+		assertThat(message.getMemberId(), is("id"));
+		assertThat(message.getMemberName(), is("Wladzio"));
+		assertThat(response.getRecipients(), containsInAnyOrder(member, member2));
+		assertFalse(conv.has(member2));
+		assertFalse(conv.has(member));
+		assertFalse(conv.has(broadcaster));
 	}
 
 	private Member mockMember(String id, String name) {
