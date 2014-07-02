@@ -23,14 +23,14 @@ function NextRTC(config) {
 		return NextRTC.instance;
 	}
 
+	this.mediaConfig = config.mediaConfig !== undefined ? config.mediaConfig : null;
+	this.mediaAutoRequest = config.mediaAutoRequest !== undefined ? config.mediaAutoRequest : true;
+	this.type = config.type;
+
 	this.signaling = new WebSocket(config.wsURL);
 	this.peerConnections = {};
-	this.mediaConfig = config.mediaConfig;
-	this.mediaAutoRequest = config.mediaAutoRequest !== undefined ? config.mediaAutoRequest
-			: true;
-	this.signals = {};
 	this.localStream = null;
-	this.type = config.type;
+	this.signals = {};
 
 	this.on = function(signal, operation) {
 		this.signals[signal] = operation;
