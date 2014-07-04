@@ -31,9 +31,7 @@ public abstract class AbstractConversation implements Conversation {
 	}
 
 	protected SignalResponse broadcast(Message message) {
-		SignalResponse signalResponse = new SignalResponse(message);
-		signalResponse.addAll(members);
-		return signalResponse;
+		return new SignalResponse(message, members);
 	}
 
 	protected Member findById(String memberId) {

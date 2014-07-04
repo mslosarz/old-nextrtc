@@ -1,5 +1,8 @@
 package org.nextrtc.server.service.provider;
 
+import java.util.Map;
+import java.util.Set;
+
 import javax.websocket.Session;
 
 import org.nextrtc.server.domain.Message;
@@ -15,9 +18,11 @@ public class DefaultMessageSender implements MessageSender {
 	@Override
 	public void send(SenderRequest request) {
 		if (request != null) {
-			Message message = request.getMessage();
-			for (Session session : request.getSessions()) {
-				session.getAsyncRemote().sendObject(message);
+			Map<Message, Set<Session>> sessions = request.getSessions();
+			for (Message message : sessions.keySet()) {
+				for (Session session : sessions.get(message)) {
+					session.getAsyncRemote().sendObject(message);
+				}
 			}
 		}
 	}

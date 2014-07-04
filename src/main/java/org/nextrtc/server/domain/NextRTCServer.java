@@ -3,6 +3,8 @@ package org.nextrtc.server.domain;
 import static org.nextrtc.server.domain.signal.DefaultSignal.left;
 
 import java.io.IOException;
+import java.util.List;
+import java.util.Map;
 
 import javax.websocket.Session;
 
@@ -14,6 +16,7 @@ import org.nextrtc.server.domain.signal.SignalResponse;
 import org.nextrtc.server.exception.MemberNotFoundException;
 import org.nextrtc.server.exception.SessionCloseException;
 import org.nextrtc.server.factory.ConversationFactoryResolver;
+import org.nextrtc.server.factory.MemberFactory;
 import org.nextrtc.server.service.MessageSender;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
@@ -40,11 +43,14 @@ public class NextRTCServer {
 	@Autowired
 	private ConversationFactoryResolver conversationFactoryResolver;
 
+	@Autowired
+	private MemberFactory memberFactory;
+
 	private final BiMap<Session, String> memberSession = Maps.synchronizedBiMap(//
 			HashBiMap.<Session, String> create());
 
 	public void register(Session session) {
-		bindSessionToMember(session);
+		bindSessionToMember(session, memberFactory.create());
 	}
 
 	public void handle(Message message, Session session) {
@@ -75,8 +81,8 @@ public class NextRTCServer {
 		throw new MemberNotFoundException();
 	}
 
-	private void bindSessionToMember(Session session) {
-		Member member = members.create();
+	private void bindSessionToMember(Session session, Member member) {
+		members.save(member);
 		log.debug("New member: " + member + " has been created and bind to session: " + session.getId());
 		memberSession.put(session, member.getId());
 	}
@@ -91,9 +97,12 @@ public class NextRTCServer {
 	}
 
 	private SenderRequest transform(SignalResponse response) {
-		SenderRequest request = new SenderRequest(response.getMessage());
-		for (Member recipient : response.getRecipients()) {
-			request.add(memberSession.inverse().get(recipient.getId()));
+		SenderRequest request = new SenderRequest();
+		Map<Message, List<Member>> recipients = response.getRecipients();
+		for(Message message : recipients.keySet()){
+			for(Member recipient : recipients.get(message)){
+				request.add(message, memberSession.inverse().get(recipient.getId()));
+			}
 		}
 		return request;
 	}

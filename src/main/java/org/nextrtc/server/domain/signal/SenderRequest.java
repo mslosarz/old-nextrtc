@@ -1,6 +1,8 @@
 package org.nextrtc.server.domain.signal;
 
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 import javax.websocket.Session;
@@ -9,29 +11,18 @@ import org.nextrtc.server.domain.Message;
 
 public class SenderRequest {
 
-	private Message message;
+	private Map<Message, Set<Session>> sessions = new HashMap<>();
 
-	private Set<Session> sessions = new HashSet<>();
-
-	public SenderRequest(Message message) {
-		if (message == null) {
-			throw new IllegalArgumentException("Message has to be set!");
+	public void add(Message message, Session session) {
+		if (sessions.containsKey(message) == false) {
+			sessions.put(message, new HashSet<Session>());
 		}
-		this.message = message;
+		if (session != null) {
+			sessions.get(message).add(session);
+		}
 	}
 
-	public Message getMessage() {
-		return message;
-	}
-
-	public Set<Session> getSessions() {
+	public Map<Message, Set<Session>> getSessions() {
 		return sessions;
 	}
-
-	public void add(Session session) {
-		if (session != null) {
-			sessions.add(session);
-		}
-	}
-
 }

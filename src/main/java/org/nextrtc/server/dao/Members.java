@@ -7,7 +7,7 @@ import com.google.common.base.Optional;
 
 public interface Members {
 
-	Member create();
+	void save(Member member);
 
 	Optional<Member> findBy(String id);
 

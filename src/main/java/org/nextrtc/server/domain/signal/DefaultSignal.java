@@ -66,7 +66,7 @@ public enum DefaultSignal implements Signal {
 		}
 
 		private void registerConversation(Conversation conversation, RequestContext requestContext) {
-			requestContext.getConversations().add(conversation);
+			requestContext.getConversations().save(conversation);
 		}
 	},
 
@@ -179,6 +179,8 @@ public enum DefaultSignal implements Signal {
 	 * outgoing
 	 */
 	created,
+
+	joined,
 
 	offerRequest,
 

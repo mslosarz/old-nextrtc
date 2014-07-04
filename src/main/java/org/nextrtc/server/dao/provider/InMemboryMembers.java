@@ -7,7 +7,6 @@ import java.util.Set;
 
 import org.nextrtc.server.dao.Members;
 import org.nextrtc.server.domain.Member;
-import org.nextrtc.server.domain.provider.DefaultMember;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
@@ -20,10 +19,8 @@ public class InMemboryMembers implements Members {
 	private Set<Member> defaultMembers = synchronizedSet(new HashSet<Member>());
 
 	@Override
-	public Member create() {
-		Member member = new DefaultMember();
+	public void save(Member member) {
 		defaultMembers.add(member);
-		return member;
 	}
 
 	@Override

@@ -20,7 +20,7 @@ public class InMemoryConversations implements Conversations {
 	private Set<Conversation> conversations = synchronizedSet(new HashSet<Conversation>());
 
 	@Override
-	public void add(Conversation conversation) {
+	public void save(Conversation conversation) {
 		conversations.add(conversation);
 	}
 

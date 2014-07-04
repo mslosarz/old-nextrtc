@@ -1,47 +1,48 @@
 package org.nextrtc.server.domain.signal;
 
+import static java.util.Arrays.asList;
 import static org.nextrtc.server.domain.signal.DefaultSignal.finalize;
 
 import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 
 import org.nextrtc.server.domain.Member;
 import org.nextrtc.server.domain.Message;
 
 public class SignalResponse {
 
-	private Message message;
+	private Map<Message, List<Member>> recipients = new HashMap<>();
 
-	private Set<Member> recipients = new HashSet<>();
+	public SignalResponse(Message message, Member... members) {
+		this(message, asList(members));
+	}
 
-	public SignalResponse(Message message) {
+	public SignalResponse(Message message, Collection<Member> members) {
 		if (message == null) {
 			throw new IllegalArgumentException("Message has to be set!");
 		}
-		this.message = message;
+		addAll(message, members);
 	}
 
-	public SignalResponse(Message message, Member member) {
-		this(message);
-		add(member);
-	}
-
-	public void add(Member member) {
+	public void add(Message message, Member member) {
+		if (recipients.containsKey(message) == false) {
+			recipients.put(message, new LinkedList<Member>());
+		}
 		if (member != null) {
-			recipients.add(member);
+			recipients.get(message).add(member);
 		}
 	}
 
-	public void addAll(Collection<Member> members) {
-		recipients.addAll(members);
+	private void addAll(Message message, Collection<Member> members) {
+		for (Member member : members) {
+			add(message, member);
+		}
 	}
 
-	public Message getMessage() {
-		return message;
-	}
-
-	public Set<Member> getRecipients() {
+	public Map<Message, List<Member>> getRecipients() {
 		return recipients;
 	}
 
@@ -50,10 +51,7 @@ public class SignalResponse {
 	 * any member
 	 */
 	public static final SignalResponse EMPTY = new SignalResponse(Message.createWith(finalize).build()) {
-		public void add(Member member) {
-		};
-
-		public void addAll(java.util.Collection<Member> members) {
+		public void add(Message message, Member member) {
 		};
 	};
 }
