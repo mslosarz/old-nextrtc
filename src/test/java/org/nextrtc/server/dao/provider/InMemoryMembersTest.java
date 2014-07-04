@@ -11,12 +11,16 @@ import org.junit.Before;
 import org.junit.Test;
 import org.nextrtc.server.dao.Members;
 import org.nextrtc.server.domain.Member;
+import org.nextrtc.server.factory.MemberFactory;
+import org.nextrtc.server.factory.provider.DefaultMemberFactory;
 
 import com.google.common.base.Optional;
 
 public class InMemoryMembersTest {
 
 	private Members container;
+
+	private MemberFactory factory = new DefaultMemberFactory();
 
 	@Before
 	public void setupContainer() {
@@ -28,7 +32,7 @@ public class InMemoryMembersTest {
 		// given
 
 		// when
-		Member newOne = container.create();
+		Member newOne = factory.create();
 
 		// then
 		assertNotNull(newOne);
@@ -38,7 +42,8 @@ public class InMemoryMembersTest {
 	@Test
 	public void shouldFindCreatedMember() {
 		// given
-		Member member = container.create();
+		Member member = factory.create();
+		container.save(member);
 
 		// when
 		Optional<Member> found = container.findBy(member.getId());
@@ -51,7 +56,8 @@ public class InMemoryMembersTest {
 	@Test
 	public void shouldRemoveMember() {
 		// given
-		Member member = container.create();
+		Member member = factory.create();
+		container.save(member);
 
 		// when
 		container.remove(member);
@@ -63,7 +69,8 @@ public class InMemoryMembersTest {
 	@Test
 	public void shouldUpdateMemberNick() {
 		// given
-		Member member = container.create();
+		Member member = factory.create();
+		container.save(member);
 		assertThat(member.getName(), isEmptyOrNullString());
 
 		// when

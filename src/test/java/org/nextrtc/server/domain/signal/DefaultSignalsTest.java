@@ -194,12 +194,13 @@ public class DefaultSignalsTest {
 
 	private Conversation stubConversation() {
 		Conversation created = context.getConversationFactoryResolver().getDefaultOrBy(null).create();
-		context.getConversations().add(created);
+		context.getConversations().save(created);
 		return created;
 	}
 
 	private Member stubMember(String name) {
-		Member member = context.getMembers().create();
+		Member member = new DefaultMember();
+		context.getMembers().save(member);
 		if (StringUtils.isEmpty(name)) {
 			return member;
 		}

@@ -19,6 +19,9 @@ import static org.nextrtc.server.domain.signal.DefaultSignal.left;
 import static org.nextrtc.server.domain.signal.DefaultSignal.offerRequest;
 import static org.nextrtc.server.domain.signal.DefaultSignal.offerResponse;
 
+import java.util.List;
+import java.util.Map;
+
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -79,11 +82,12 @@ public class MeshConversationTest {
 		SignalResponse response = conv.joinOwner(owner);
 
 		// then
-		Message message = response.getMessage();
+		Map<Message, List<Member>> recipients = response.getRecipients();
+		Message message = recipients.keySet().iterator().next();
 
 		assertThat(message.getSignal(), is((Signal) created));
 		assertThat(message.getContent(), is(conv.getId()));
-		assertThat(response.getRecipients(), contains(owner));
+		assertThat(recipients.get(message), contains(owner));
 	}
 
 	@Test
@@ -97,14 +101,15 @@ public class MeshConversationTest {
 		SignalResponse response = conv.join(member);
 
 		// then
-		Message message = response.getMessage();
+		Map<Message, List<Member>> recipients = response.getRecipients();
+		Message message = recipients.keySet().iterator().next();
 
 		assertThat(message.getSignal(), is((Signal) offerRequest));
 		assertThat(message.getContent(), isEmptyOrNullString());
 		assertThat(message.getMemberId(), is("id"));
 		assertThat(message.getMemberName(), is("Wladzio"));
-		assertThat(response.getRecipients(), contains(owner));
-		assertThat(response.getRecipients(), not(contains(member)));
+		assertThat(recipients.get(message), contains(owner));
+		assertThat(recipients.get(message), not(contains(member)));
 	}
 
 	@Test
@@ -121,14 +126,15 @@ public class MeshConversationTest {
 		SignalResponse response = conv.join(joining);
 
 		// then
-		Message message = response.getMessage();
+		Map<Message, List<Member>> recipients = response.getRecipients();
+		Message message = recipients.keySet().iterator().next();
 
 		assertThat(message.getSignal(), is((Signal) offerRequest));
 		assertThat(message.getContent(), isEmptyOrNullString());
 		assertThat(message.getMemberId(), is("joining"));
 		assertThat(message.getMemberName(), is("Stefan"));
-		assertThat(response.getRecipients(), containsInAnyOrder(member, owner));
-		assertThat(response.getRecipients(), not(contains(joining)));
+		assertThat(recipients.get(message), containsInAnyOrder(member, owner));
+		assertThat(recipients.get(message), not(contains(joining)));
 	}
 
 	@Test
@@ -150,13 +156,14 @@ public class MeshConversationTest {
 						.build());
 
 		// then
-		Message message = response.getMessage();
+		Map<Message, List<Member>> recipients = response.getRecipients();
+		Message message = recipients.keySet().iterator().next();
 
 		assertThat(message.getSignal(), is((Signal) answerRequest));
 		assertThat(message.getContent(), is("local Wladzio sdp"));
 		assertThat(message.getMemberId(), is("id"));
 		assertThat(message.getMemberName(), is("Wladzio"));
-		assertThat(response.getRecipients(), contains(joining));
+		assertThat(recipients.get(message), contains(joining));
 	}
 
 	@Test
@@ -178,13 +185,14 @@ public class MeshConversationTest {
 						.build());
 
 		// then
-		Message message = response.getMessage();
+		Map<Message, List<Member>> recipients = response.getRecipients();
+		Message message = recipients.keySet().iterator().next();
 
 		assertThat(message.getSignal(), is((Signal) finalize));
 		assertThat(message.getContent(), is("local Stefan sdp"));
 		assertThat(message.getMemberId(), is("joining"));
 		assertThat(message.getMemberName(), is("Stefan"));
-		assertThat(response.getRecipients(), contains(member));
+		assertThat(recipients.get(message), contains(member));
 	}
 
 	@Test
@@ -219,13 +227,14 @@ public class MeshConversationTest {
 		SignalResponse response = conv.disconnect(leaving);
 
 		// then
-		Message message = response.getMessage();
+		Map<Message, List<Member>> recipients = response.getRecipients();
+		Message message = recipients.keySet().iterator().next();
 
 		assertThat(message.getSignal(), is((Signal) left));
 		assertThat(message.getContent(), isEmptyOrNullString());
 		assertThat(message.getMemberId(), is("leaving"));
 		assertThat(message.getMemberName(), is("Karolina"));
-		assertThat(response.getRecipients(), containsInAnyOrder(member, member2));
+		assertThat(recipients.get(message), containsInAnyOrder(member, member2));
 	}
 
 	private Member mockMember(String id, String name) {

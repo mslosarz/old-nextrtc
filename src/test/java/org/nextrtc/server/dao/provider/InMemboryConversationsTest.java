@@ -43,7 +43,7 @@ public class InMemboryConversationsTest {
 	public void shouldCreateAndFindConversation() {
 		// given
 		Conversation created = factory.create();
-		container.add(created);
+		container.save(created);
 
 		// when
 		Optional<Conversation> found = container.findBy(created.getId());
@@ -80,7 +80,7 @@ public class InMemboryConversationsTest {
 	public void shouldFindConversationByMember() {
 		// given
 		Conversation created = factory.create();
-		container.add(created);
+		container.save(created);
 		Member member = new DefaultMember("qwer-ty", "Wladzio");
 		created.join(member);
 
@@ -96,7 +96,7 @@ public class InMemboryConversationsTest {
 	public void shouldReturnNullForNullMemberParameter() {
 		// given
 		Conversation created = factory.create();
-		container.add(created);
+		container.save(created);
 		Member member = new DefaultMember("qwer-ty", "Wladzio");
 		created.join(member);
 		Member nullMember = null;
@@ -112,7 +112,7 @@ public class InMemboryConversationsTest {
 	public void shouldRemoveExistingConversation() {
 		// given
 		Conversation conv = factory.create();
-		container.add(conv);
+		container.save(conv);
 
 		// when
 		container.remove(conv);
@@ -126,7 +126,7 @@ public class InMemboryConversationsTest {
 	public void removeShouldWorkForNullParameter() {
 		// given
 		Conversation conv = factory.create();
-		container.add(conv);
+		container.save(conv);
 
 		// when
 		container.remove(null);

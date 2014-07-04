@@ -11,7 +11,6 @@ import org.junit.Test;
 import org.nextrtc.server.domain.Message;
 import org.nextrtc.server.domain.signal.SenderRequest;
 import org.nextrtc.server.service.MessageSender;
-import org.nextrtc.server.service.provider.DefaultMessageSender;
 
 
 public class DefaultMessageSenderTest {
@@ -32,7 +31,7 @@ public class DefaultMessageSenderTest {
 	@Test
 	public void shouldWorkForExistingRequestWithMessage() {
 		// given
-		SenderRequest request = new SenderRequest(mock(Message.class));
+		SenderRequest request = new SenderRequest();
 
 		// when
 		sender.send(request);
@@ -71,9 +70,9 @@ public class DefaultMessageSenderTest {
 	}
 
 	private SenderRequest setupRequest(Message message, Session... sessions) {
-		SenderRequest request = new SenderRequest(message);
+		SenderRequest request = new SenderRequest();
 		for (Session session : sessions) {
-			request.add(session);
+			request.add(message, session);
 		}
 		return request;
 	}

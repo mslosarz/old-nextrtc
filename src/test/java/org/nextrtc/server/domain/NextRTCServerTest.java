@@ -26,6 +26,7 @@ import org.nextrtc.server.domain.signal.SignalResponse;
 import org.nextrtc.server.exception.MemberNotFoundException;
 import org.nextrtc.server.factory.ConversationFactory;
 import org.nextrtc.server.factory.ConversationFactoryResolver;
+import org.nextrtc.server.factory.MemberFactory;
 import org.nextrtc.server.service.MessageSender;
 
 import com.google.common.base.Optional;
@@ -48,7 +49,10 @@ public class NextRTCServerTest {
 	private ConversationFactoryResolver resolver;
 
 	@Mock
-	private ConversationFactory factory;
+	private ConversationFactory conversationFactory;
+
+	@Mock
+	private MemberFactory memberFactory;
 
 	@Rule
 	public ExpectedException exception = ExpectedException.none();
@@ -58,7 +62,7 @@ public class NextRTCServerTest {
 		server = new NextRTCServer();
 		MockitoAnnotations.initMocks(this);
 		
-		when(resolver.getDefaultOrBy((String) Mockito.anyString())).thenReturn(factory);
+		when(resolver.getDefaultOrBy((String) Mockito.anyString())).thenReturn(conversationFactory);
 	}
 
 	@Test
@@ -66,13 +70,13 @@ public class NextRTCServerTest {
 		// given
 		Session session = mock(Session.class);
 		DefaultMember member = stubMember("id", "Wladzio");
-		when(members.create()).thenReturn(member);
+		when(memberFactory.create()).thenReturn(member);
 
 		// when
 		server.register(session);
 
 		// then
-		verify(members).create();
+		verify(members).save(member);
 	}
 
 	@Test
@@ -124,12 +128,12 @@ public class NextRTCServerTest {
 	}
 
 	private void mockMemberDaoFor(Member member) {
-		when(members.create()).thenReturn(member);
+		when(memberFactory.create()).thenReturn(member);
 		when(members.findBy("id")).thenReturn(fromNullable(member));
 	}
 
 	private void mockConversationDaoFor(Conversation conv, Member member) {
-		when(factory.create()).thenReturn(conv);
+		when(conversationFactory.create()).thenReturn(conv);
 		when(conversations.findBy(member)).thenReturn(fromNullable(conv));
 		when(conversations.findBy(conv.getId())).thenReturn(fromNullable(conv));
 	}
@@ -140,7 +144,7 @@ public class NextRTCServerTest {
 
 	@After
 	public void resetMocks() {
-		reset(sender, conversations, members, resolver, factory);
+		reset(sender, conversations, members, resolver, conversationFactory);
 	}
 
 }

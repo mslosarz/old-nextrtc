@@ -20,6 +20,9 @@ import static org.nextrtc.server.domain.signal.DefaultSignal.left;
 import static org.nextrtc.server.domain.signal.DefaultSignal.offerRequest;
 import static org.nextrtc.server.domain.signal.DefaultSignal.offerResponse;
 
+import java.util.List;
+import java.util.Map;
+
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -78,11 +81,12 @@ public class BroadcastConversationTest {
 		SignalResponse response = conv.joinOwner(broadcaster);
 
 		// then
-		Message message = response.getMessage();
+		Map<Message, List<Member>> recipients = response.getRecipients();
+		Message message = recipients.keySet().iterator().next();
 
 		assertThat(message.getSignal(), is((Signal) created));
 		assertThat(message.getContent(), is(conv.getId()));
-		assertThat(response.getRecipients(), contains(broadcaster));
+		assertThat(recipients.get(message), contains(broadcaster));
 	}
 
 	@Test
@@ -96,14 +100,15 @@ public class BroadcastConversationTest {
 		SignalResponse response = conv.join(listener);
 
 		// then
-		Message message = response.getMessage();
+		Map<Message, List<Member>> recipients = response.getRecipients();
+		Message message = recipients.keySet().iterator().next();
 
 		assertThat(message.getSignal(), is((Signal) offerRequest));
 		assertThat(message.getContent(), isEmptyOrNullString());
 		assertThat(message.getMemberId(), is("id"));
 		assertThat(message.getMemberName(), is("Wladzio"));
-		assertThat(response.getRecipients(), contains(broadcaster));
-		assertThat(response.getRecipients(), not(contains(listener)));
+		assertThat(recipients.get(message), contains(broadcaster));
+		assertThat(recipients.get(message), not(contains(listener)));
 	}
 
 	@Test
@@ -120,15 +125,16 @@ public class BroadcastConversationTest {
 		SignalResponse response = conv.join(joining);
 
 		// then
-		Message message = response.getMessage();
+		Map<Message, List<Member>> recipients = response.getRecipients();
+		Message message = recipients.keySet().iterator().next();
 
 		assertThat(message.getSignal(), is((Signal) offerRequest));
 		assertThat(message.getContent(), isEmptyOrNullString());
 		assertThat(message.getMemberId(), is("joining"));
 		assertThat(message.getMemberName(), is("Stefan"));
-		assertThat(response.getRecipients(), contains(broadcaster));
-		assertThat(response.getRecipients(), not(contains(existing)));
-		assertThat(response.getRecipients(), not(contains(joining)));
+		assertThat(recipients.get(message), contains(broadcaster));
+		assertThat(recipients.get(message), not(contains(existing)));
+		assertThat(recipients.get(message), not(contains(joining)));
 	}
 
 	@Test
@@ -150,14 +156,15 @@ public class BroadcastConversationTest {
 						.build());
 
 		// then
-		Message message = response.getMessage();
+		Map<Message, List<Member>> recipients = response.getRecipients();
+		Message message = recipients.keySet().iterator().next();
 
 		assertThat(message.getSignal(), is((Signal) answerRequest));
 		assertThat(message.getContent(), is("local Wladzio sdp"));
 		assertThat(message.getMemberId(), is("id"));
 		assertThat(message.getMemberName(), is("Wladzio"));
-		assertThat(response.getRecipients(), contains(joining));
-		assertThat(response.getRecipients(), not(contains(mock)));
+		assertThat(recipients.get(message), contains(joining));
+		assertThat(recipients.get(message), not(contains(mock)));
 	}
 
 	@Test
@@ -179,15 +186,16 @@ public class BroadcastConversationTest {
 						.build());
 
 		// then
-		Message message = response.getMessage();
+		Map<Message, List<Member>> recipients = response.getRecipients();
+		Message message = recipients.keySet().iterator().next();
 
 		assertThat(message.getSignal(), is((Signal) finalize));
 		assertThat(message.getContent(), is("local Stefan sdp"));
 		assertThat(message.getMemberId(), is("joining"));
 		assertThat(message.getMemberName(), is("Stefan"));
-		assertThat(response.getRecipients(), contains(broadcaster));
-		assertThat(response.getRecipients(), not(contains(joining)));
-		assertThat(response.getRecipients(), not(contains(mock)));
+		assertThat(recipients.get(message), contains(broadcaster));
+		assertThat(recipients.get(message), not(contains(joining)));
+		assertThat(recipients.get(message), not(contains(mock)));
 	}
 
 	@Test
@@ -204,14 +212,15 @@ public class BroadcastConversationTest {
 		SignalResponse response = conv.disconnect(leaving);
 
 		// then
-		Message message = response.getMessage();
+		Map<Message, List<Member>> recipients = response.getRecipients();
+		Message message = recipients.keySet().iterator().next();
 
 		assertThat(message.getSignal(), is((Signal) left));
 		assertThat(message.getContent(), isEmptyOrNullString());
 		assertThat(message.getMemberId(), is("leaving"));
 		assertThat(message.getMemberName(), is("Karolina"));
-		assertThat(response.getRecipients(), contains(broadcaster));
-		assertThat(response.getRecipients(), not(contains(member)));
+		assertThat(recipients.get(message), contains(broadcaster));
+		assertThat(recipients.get(message), not(contains(member)));
 
 	}
 
@@ -229,13 +238,14 @@ public class BroadcastConversationTest {
 		SignalResponse response = conv.disconnect(broadcaster);
 
 		// then
-		Message message = response.getMessage();
+		Map<Message, List<Member>> recipients = response.getRecipients();
+		Message message = recipients.keySet().iterator().next();
 
 		assertThat(message.getSignal(), is((Signal) left));
 		assertThat(message.getContent(), isEmptyOrNullString());
 		assertThat(message.getMemberId(), is("id"));
 		assertThat(message.getMemberName(), is("Wladzio"));
-		assertThat(response.getRecipients(), containsInAnyOrder(member, member2));
+		assertThat(recipients.get(message), containsInAnyOrder(member, member2));
 		assertFalse(conv.has(member2));
 		assertFalse(conv.has(member));
 		assertFalse(conv.has(broadcaster));
