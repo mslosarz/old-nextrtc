@@ -2,6 +2,7 @@ package org.nextrtc.server.dao.provider;
 
 import static java.util.Collections.synchronizedSet;
 
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -51,5 +52,10 @@ public class InMemoryConversations implements Conversations {
 	@Override
 	public void remove(Conversation conversation) {
 		conversations.remove(conversation);
+	}
+
+	@Override
+	public Collection<Conversation> getAll() {
+		return conversations;
 	}
 }

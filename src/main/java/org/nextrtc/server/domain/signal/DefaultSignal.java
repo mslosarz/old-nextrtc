@@ -236,6 +236,7 @@ public enum DefaultSignal implements Signal {
 	}
 
 	protected void updateMemberName(Member member, Message message, RequestContext requestContext) {
-		requestContext.getMembers().updateNick(member, message.getMemberName());
+		member.setName(message.getMemberName());
+		requestContext.getMembers().update(member);
 	}
 }

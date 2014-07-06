@@ -2,6 +2,7 @@ package org.nextrtc.server.dao.provider;
 
 import static java.util.Collections.synchronizedSet;
 
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -41,12 +42,16 @@ public class InMemboryMembers implements Members {
 	}
 
 	@Override
-	public void updateNick(Member member, String nick) {
+	public void update(Member member) {
 		if (defaultMembers.contains(member)) {
 			defaultMembers.remove(member);
-			member.setName(nick);
 			defaultMembers.add(member);
 		}
+	}
+
+	@Override
+	public Collection<Member> getAll() {
+		return defaultMembers;
 	}
 
 }

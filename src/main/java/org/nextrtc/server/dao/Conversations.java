@@ -1,5 +1,7 @@
 package org.nextrtc.server.dao;
 
+import java.util.Collection;
+
 import org.nextrtc.server.domain.Conversation;
 import org.nextrtc.server.domain.Member;
 
@@ -15,5 +17,6 @@ public interface Conversations {
 
 	void remove(Conversation conversation);
 
+	Collection<Conversation> getAll();
 
 }
