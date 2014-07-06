@@ -11,6 +11,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.nextrtc.server.dao.Members;
 import org.nextrtc.server.domain.Member;
+import org.nextrtc.server.domain.provider.DefaultMember;
 import org.nextrtc.server.factory.MemberFactory;
 import org.nextrtc.server.factory.provider.DefaultMemberFactory;
 
@@ -74,15 +75,13 @@ public class InMemoryMembersTest {
 		assertThat(member.getName(), isEmptyOrNullString());
 
 		// when
-		container.updateNick(member, "Stefan");
+		container.update(new DefaultMember(member.getId(), "Stefan"));
 
 		// then
-		assertThat(member.getName(), is("Stefan"));
-
 		Optional<Member> found = container.findBy(member.getId());
 		assertTrue(found.isPresent());
 		assertThat(member.getId(), is(found.get().getId()));
-		assertThat(member.getName(), is(found.get().getName()));
+		assertThat("Stefan", is(found.get().getName()));
 	}
 
 }
