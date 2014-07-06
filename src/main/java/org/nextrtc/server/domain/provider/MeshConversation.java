@@ -3,6 +3,7 @@ package org.nextrtc.server.domain.provider;
 import static org.nextrtc.server.domain.signal.DefaultSignal.answerRequest;
 import static org.nextrtc.server.domain.signal.DefaultSignal.created;
 import static org.nextrtc.server.domain.signal.DefaultSignal.finalize;
+import static org.nextrtc.server.domain.signal.DefaultSignal.joined;
 import static org.nextrtc.server.domain.signal.DefaultSignal.left;
 import static org.nextrtc.server.domain.signal.DefaultSignal.offerRequest;
 
@@ -34,14 +35,18 @@ public class MeshConversation extends AbstractConversation implements Conversati
 	}
 
 	public synchronized SignalResponse join(Member member) {
-		Message message = Message//
+
+		SignalResponse broadcast = broadcast(Message//
 				.createWith(offerRequest)//
 				.withMember(member)//
-				.build();
-
-		SignalResponse broadcast = broadcast(message);
+				.build());
+		broadcast.add(Message//
+				.createWith(joined)//
+				.withContent(getId())//
+				.build(), member);
 
 		members.add(member);
+
 		return broadcast;
 	}
 

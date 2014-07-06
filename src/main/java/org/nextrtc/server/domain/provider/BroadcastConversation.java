@@ -4,6 +4,7 @@ import static com.google.common.base.Preconditions.checkArgument;
 import static org.nextrtc.server.domain.signal.DefaultSignal.answerRequest;
 import static org.nextrtc.server.domain.signal.DefaultSignal.created;
 import static org.nextrtc.server.domain.signal.DefaultSignal.finalize;
+import static org.nextrtc.server.domain.signal.DefaultSignal.joined;
 import static org.nextrtc.server.domain.signal.DefaultSignal.left;
 import static org.nextrtc.server.domain.signal.DefaultSignal.offerRequest;
 
@@ -41,15 +42,18 @@ public class BroadcastConversation extends AbstractConversation implements Conve
 	@Override
 	public synchronized SignalResponse join(Member member) {
 		checkArgument(owner.isPresent(), "This conversation doesn't have owner!");
-
-		Message message = Message//
-				.createWith(offerRequest)//
-				.withMember(member)//
-				.build();
-
 		members.add(member);
 
-		return new SignalResponse(message, owner.get());
+		SignalResponse signalResponse = new SignalResponse(Message//
+				.createWith(offerRequest)//
+				.withMember(member)//
+				.build(), owner.get());
+		signalResponse.add(Message//
+				.createWith(joined)//
+				.withContent(getId())//
+				.build(), member);
+
+		return signalResponse;
 	}
 
 	@Override
