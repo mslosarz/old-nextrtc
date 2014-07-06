@@ -1,10 +1,13 @@
 package org.nextrtc.server.dao.provider;
 
+import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
+
+import java.util.Collection;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -134,6 +137,22 @@ public class InMemboryConversationsTest {
 
 		// then
 		assertTrue(found.isPresent());
+	}
+
+	@Test
+	public void shouldReturlCollectionOfConversations(){
+		// given
+		factory = ConversationTypes.broadcast.getFactory();
+		Conversation conv1 = factory.create("0");
+		Conversation conv2 = factory.create("1");
+		container.save(conv1);
+		container.save(conv2);
+
+		// when
+		Collection<Conversation> all = container.getAll();
+
+		// then
+		assertThat(all, containsInAnyOrder(conv1, conv2));
 	}
 
 }

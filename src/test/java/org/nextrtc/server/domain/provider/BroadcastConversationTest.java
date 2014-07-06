@@ -30,6 +30,7 @@ import org.junit.rules.ExpectedException;
 import org.nextrtc.server.domain.Conversation;
 import org.nextrtc.server.domain.Member;
 import org.nextrtc.server.domain.Message;
+import org.nextrtc.server.domain.signal.DefaultSignal;
 import org.nextrtc.server.domain.signal.Signal;
 import org.nextrtc.server.domain.signal.SignalResponse;
 
@@ -100,13 +101,12 @@ public class BroadcastConversationTest {
 		SignalResponse response = conv.join(listener);
 
 		// then
-		Map<Message, List<Member>> recipients = response.getRecipients();
-		Message message = recipients.keySet().iterator().next();
-
-		assertThat(message.getSignal(), is((Signal) offerRequest));
+		Message message = fetchMessageFromRequest(response, offerRequest);
 		assertThat(message.getContent(), isEmptyOrNullString());
 		assertThat(message.getMemberId(), is("id"));
 		assertThat(message.getMemberName(), is("Wladzio"));
+
+		Map<Message, List<Member>> recipients = response.getRecipients();
 		assertThat(recipients.get(message), contains(broadcaster));
 		assertThat(recipients.get(message), not(contains(listener)));
 	}
@@ -125,13 +125,12 @@ public class BroadcastConversationTest {
 		SignalResponse response = conv.join(joining);
 
 		// then
-		Map<Message, List<Member>> recipients = response.getRecipients();
-		Message message = recipients.keySet().iterator().next();
-
-		assertThat(message.getSignal(), is((Signal) offerRequest));
+		Message message = fetchMessageFromRequest(response, offerRequest);
 		assertThat(message.getContent(), isEmptyOrNullString());
 		assertThat(message.getMemberId(), is("joining"));
 		assertThat(message.getMemberName(), is("Stefan"));
+
+		Map<Message, List<Member>> recipients = response.getRecipients();
 		assertThat(recipients.get(message), contains(broadcaster));
 		assertThat(recipients.get(message), not(contains(existing)));
 		assertThat(recipients.get(message), not(contains(joining)));
@@ -256,6 +255,17 @@ public class BroadcastConversationTest {
 		when(mock.getId()).thenReturn(id);
 		when(mock.getName()).thenReturn(name);
 		return mock;
+	}
+
+	private Message fetchMessageFromRequest(SignalResponse response, DefaultSignal signal) {
+		Message message = null;
+		for (Message msg : response.getRecipients().keySet()) {
+			if (msg.getSignal().equals(signal)) {
+				message = msg;
+				break;
+			}
+		}
+		return message;
 	}
 
 }
