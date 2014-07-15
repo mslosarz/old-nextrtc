@@ -10,7 +10,6 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 import static org.nextrtc.server.domain.Message.createWith;
 import static org.nextrtc.server.domain.signal.DefaultSignal.answerRequest;
 import static org.nextrtc.server.domain.signal.DefaultSignal.answerResponse;
@@ -20,6 +19,7 @@ import static org.nextrtc.server.domain.signal.DefaultSignal.left;
 import static org.nextrtc.server.domain.signal.DefaultSignal.offerRequest;
 import static org.nextrtc.server.domain.signal.DefaultSignal.offerResponse;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -30,11 +30,10 @@ import org.junit.rules.ExpectedException;
 import org.nextrtc.server.domain.Conversation;
 import org.nextrtc.server.domain.Member;
 import org.nextrtc.server.domain.Message;
-import org.nextrtc.server.domain.signal.DefaultSignal;
 import org.nextrtc.server.domain.signal.Signal;
 import org.nextrtc.server.domain.signal.SignalResponse;
 
-public class BroadcastConversationTest {
+public class BroadcastConversationTest extends AbstractConversationTest {
 
 	private Conversation conv;
 
@@ -250,22 +249,46 @@ public class BroadcastConversationTest {
 		assertFalse(conv.has(broadcaster));
 	}
 
-	private Member mockMember(String id, String name) {
-		Member mock = mock(Member.class);
-		when(mock.getId()).thenReturn(id);
-		when(mock.getName()).thenReturn(name);
-		return mock;
+	@Test
+	public void shouldReturnOneMember() {
+		Member broadcaster = mockMember("id", "Wladzio");
+		conv.joinOwner(broadcaster);
+
+		// when
+		Collection<Member> members = conv.members();
+
+		// then
+		assertThat(members.size(), is(1));
 	}
 
-	private Message fetchMessageFromRequest(SignalResponse response, DefaultSignal signal) {
-		Message message = null;
-		for (Message msg : response.getRecipients().keySet()) {
-			if (msg.getSignal().equals(signal)) {
-				message = msg;
-				break;
-			}
-		}
-		return message;
+	@Test
+	public void shouldReturnTwoMembers() {
+		Member broadcaster = mockMember("id", "Wladzio");
+		Member member = mockMember("id2", "Piotr");
+		conv.joinOwner(broadcaster);
+		conv.join(member);
+
+		// when
+		Collection<Member> members = conv.members();
+
+		// then
+		assertThat(members.size(), is(2));
+	}
+
+	@Test
+	public void shouldNotModifyNumberOfMember() {
+		Member broadcaster = mockMember("id", "Wladzio");
+		Member member = mockMember("id2", "Piotr");
+		conv.joinOwner(broadcaster);
+		conv.join(member);
+		Collection<Member> members = conv.members();
+
+		// when
+		members.remove(broadcaster);
+
+		// then
+		assertThat(members.size(), is(1));
+		assertThat(conv.members().size(), is(2));
 	}
 
 }
