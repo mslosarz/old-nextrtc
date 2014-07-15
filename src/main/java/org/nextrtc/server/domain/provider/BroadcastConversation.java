@@ -8,6 +8,8 @@ import static org.nextrtc.server.domain.signal.DefaultSignal.joined;
 import static org.nextrtc.server.domain.signal.DefaultSignal.left;
 import static org.nextrtc.server.domain.signal.DefaultSignal.offerRequest;
 
+import java.util.Collection;
+
 import org.nextrtc.server.domain.Conversation;
 import org.nextrtc.server.domain.Member;
 import org.nextrtc.server.domain.Message;
@@ -95,6 +97,15 @@ public class BroadcastConversation extends AbstractConversation implements Conve
 	@Override
 	public boolean has(Member member) {
 		return super.has(member) || isOwner(member);
+	}
+
+	@Override
+	public Collection<Member> members() {
+		Collection<Member> members = super.members();
+		for (Member member : owner.asSet()) {
+			members.add(member);
+		}
+		return members;
 	}
 
 	private boolean isOwner(Member member) {

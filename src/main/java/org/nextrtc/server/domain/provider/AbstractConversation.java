@@ -2,6 +2,7 @@ package org.nextrtc.server.domain.provider;
 
 import static java.util.Collections.synchronizedSet;
 
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
@@ -56,6 +57,11 @@ public abstract class AbstractConversation implements Conversation {
 	@Override
 	public boolean isEmpty() {
 		return members.isEmpty();
+	}
+
+	@Override
+	public Collection<Member> members() {
+		return synchronizedSet(new HashSet<Member>(members));
 	}
 
 }

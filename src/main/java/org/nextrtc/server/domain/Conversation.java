@@ -1,5 +1,7 @@
 package org.nextrtc.server.domain;
 
+import java.util.Collection;
+
 import org.nextrtc.server.domain.signal.SignalResponse;
 
 
@@ -20,4 +22,6 @@ public interface Conversation {
 	SignalResponse disconnect(Member member);
 
 	boolean isEmpty();
+
+	Collection<Member> members();
 }
