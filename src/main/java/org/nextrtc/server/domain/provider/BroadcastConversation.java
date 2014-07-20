@@ -108,6 +108,11 @@ public class BroadcastConversation extends AbstractConversation implements Conve
 		return members;
 	}
 
+	@Override
+	public boolean isEmpty() {
+		return !owner.isPresent();
+	}
+
 	private boolean isOwner(Member member) {
 		if (owner.isPresent()) {
 			return owner.get().equals(member);
