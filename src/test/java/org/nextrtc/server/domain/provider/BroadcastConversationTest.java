@@ -251,6 +251,7 @@ public class BroadcastConversationTest extends AbstractConversationTest {
 
 	@Test
 	public void shouldReturnOneMember() {
+		// given
 		Member broadcaster = mockMember("id", "Wladzio");
 		conv.joinOwner(broadcaster);
 
@@ -263,6 +264,7 @@ public class BroadcastConversationTest extends AbstractConversationTest {
 
 	@Test
 	public void shouldReturnTwoMembers() {
+		// given
 		Member broadcaster = mockMember("id", "Wladzio");
 		Member member = mockMember("id2", "Piotr");
 		conv.joinOwner(broadcaster);
@@ -277,6 +279,7 @@ public class BroadcastConversationTest extends AbstractConversationTest {
 
 	@Test
 	public void shouldNotModifyNumberOfMember() {
+		// given
 		Member broadcaster = mockMember("id", "Wladzio");
 		Member member = mockMember("id2", "Piotr");
 		conv.joinOwner(broadcaster);
@@ -289,6 +292,36 @@ public class BroadcastConversationTest extends AbstractConversationTest {
 		// then
 		assertThat(members.size(), is(1));
 		assertThat(conv.members().size(), is(2));
+	}
+
+	@Test
+	public void conversationShouldBeEmptyWhenOwnerLeft() {
+		// given
+		Member broadcaster = mockMember("id", "Wladzio");
+		Member member = mockMember("id2", "Piotr");
+		conv.joinOwner(broadcaster);
+		conv.join(member);
+
+		// when
+		conv.disconnect(broadcaster);
+
+		// then
+		assertThat(conv.isEmpty(), is(true));
+	}
+
+	@Test
+	public void conversationShouldNotBeEmptyUntilOwnerLeft() {
+		// given
+		Member broadcaster = mockMember("id", "Wladzio");
+		Member member = mockMember("id2", "Piotr");
+		conv.joinOwner(broadcaster);
+		conv.join(member);
+
+		// when
+		conv.disconnect(member);
+
+		// then
+		assertThat(conv.isEmpty(), is(false));
 	}
 
 }
