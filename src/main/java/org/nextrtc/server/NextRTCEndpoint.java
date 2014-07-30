@@ -52,5 +52,6 @@ public class NextRTCEndpoint {
 		session.getAsyncRemote().sendObject(Message.createWith("error")//
 				.withContent(t.getMessage())//
 				.build());
+		server.unregister(session);
 	}
 }
