@@ -38,7 +38,7 @@ public class NextRTCEndpointTest {
 
 
 		// when
-		endpoint.onOpen(incomming);
+		endpoint.onOpen(incomming, null);
 		endpoint.onMessage(Message.createWith(create).build(), incomming);
 		endpoint.onClose(incomming);
 

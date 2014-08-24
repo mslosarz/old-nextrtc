@@ -1,5 +1,6 @@
 package org.nextrtc.server;
 
+import javax.websocket.EndpointConfig;
 import javax.websocket.OnClose;
 import javax.websocket.OnError;
 import javax.websocket.OnMessage;
@@ -29,7 +30,7 @@ public class NextRTCEndpoint {
 	}
 
 	@OnOpen
-	public void onOpen(Session session) {
+	public void onOpen(Session session, EndpointConfig config) {
 		log.debug("Opening: " + session.getId());
 		server.register(session);
 	}
