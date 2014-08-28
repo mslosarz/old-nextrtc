@@ -22,14 +22,16 @@ public class InMemoryConversations implements Conversations {
 
 	@Override
 	public void save(Conversation conversation) {
-		conversations.add(conversation);
+		if (conversation != null) {
+			conversations.add(conversation);
+		}
 	}
 
 	@Override
 	public Optional<Conversation> findBy(String conversationId) {
 		Conversation result = null;
-		for(Conversation conversation : conversations){
-			if(conversation.getId().equals(conversationId)){
+		for (Conversation conversation : conversations) {
+			if (conversation.getId().equals(conversationId)) {
 				result = conversation;
 				break;
 			}
@@ -40,8 +42,8 @@ public class InMemoryConversations implements Conversations {
 	@Override
 	public Optional<Conversation> findBy(Member member) {
 		Conversation result = null;
-		for(Conversation conversation : conversations){
-			if(conversation.has(member)){
+		for (Conversation conversation : conversations) {
+			if (conversation.has(member)) {
 				result = conversation;
 				break;
 			}

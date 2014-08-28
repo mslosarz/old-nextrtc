@@ -22,6 +22,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
+import com.google.common.base.Optional;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import com.google.common.collect.Maps;
@@ -64,9 +65,10 @@ public class NextRTCServer {
 	public void unregister(Session session) {
 		boolean sessionBoundToMember = memberSession.get(session) != null;
 		if (sessionBoundToMember) {
-			Member member = disconnectMemberFromConversation(session);
-
-			removeMember(member);
+			Optional<Member> member = disconnectMemberFromConversation(session);
+			if (member.isPresent()) {
+				removeMember(member.get());
+			}
 
 			unbindSession(session);
 
@@ -107,10 +109,10 @@ public class NextRTCServer {
 		return request;
 	}
 
-	private Member disconnectMemberFromConversation(Session session) {
-		Member member = getMemberBy(session);
+	private Optional<Member> disconnectMemberFromConversation(Session session) {
+		Optional<Member> member = members.findBy(memberSession.get(session));
 
-		boolean existsConversationWithMember = conversations.findBy(member).isPresent();
+		boolean existsConversationWithMember = member.isPresent() && conversations.findBy(member.get()).isPresent();
 
 		if (existsConversationWithMember) {
 			handle(Message.createWith(left).build(), session);
