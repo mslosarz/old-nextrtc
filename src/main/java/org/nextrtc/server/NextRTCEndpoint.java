@@ -1,5 +1,6 @@
 package org.nextrtc.server;
 
+import javax.websocket.CloseReason;
 import javax.websocket.EndpointConfig;
 import javax.websocket.OnClose;
 import javax.websocket.OnError;
@@ -42,8 +43,8 @@ public class NextRTCEndpoint {
 	}
 
 	@OnClose
-	public void onClose(Session session) {
-		log.debug("Closing: " + session.getId());
+	public void onClose(Session session, CloseReason reason) {
+		log.debug("Closing: " + session.getId() + " with reason: " + reason.getReasonPhrase());
 		server.unregister(session);
 	}
 
