@@ -6,6 +6,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.nextrtc.server.domain.signal.DefaultSignal.create;
 
+import javax.websocket.CloseReason;
 import javax.websocket.RemoteEndpoint.Async;
 import javax.websocket.Session;
 
@@ -40,7 +41,7 @@ public class NextRTCEndpointTest {
 		// when
 		endpoint.onOpen(incomming, null);
 		endpoint.onMessage(Message.createWith(create).build(), incomming);
-		endpoint.onClose(incomming);
+		endpoint.onClose(incomming, mock(CloseReason.class));
 
 		// then
 		verify(async).sendObject(Mockito.anyObject());
