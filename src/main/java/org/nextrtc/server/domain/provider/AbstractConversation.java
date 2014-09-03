@@ -64,4 +64,18 @@ public abstract class AbstractConversation implements Conversation {
 		return synchronizedSet(new HashSet<Member>(members));
 	}
 
+	@Override
+	public boolean equals(Object obj) {
+		if (!(obj instanceof Conversation)) {
+			return false;
+		}
+		Conversation conv = (Conversation) obj;
+		return this.getId().equals(conv.getId());
+	}
+
+	@Override
+	public int hashCode() {
+		return this.getId().hashCode();
+	}
+
 }
