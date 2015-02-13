@@ -1,37 +1,52 @@
 package org.nextrtc.server;
 
-import javax.websocket.CloseReason;
-import javax.websocket.EndpointConfig;
-import javax.websocket.OnClose;
-import javax.websocket.OnError;
-import javax.websocket.OnMessage;
-import javax.websocket.OnOpen;
-import javax.websocket.Session;
+import java.util.Set;
+import java.util.UUID;
+
+import javax.websocket.*;
 
 import org.apache.log4j.Logger;
 import org.nextrtc.server.domain.Message;
 import org.nextrtc.server.domain.NextRTCServer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.web.context.ContextLoader;
-import org.springframework.web.context.WebApplicationContext;
+
+import com.google.common.collect.Sets;
 
 @Component
 public class NextRTCEndpoint {
 	private static final Logger log = Logger.getLogger(NextRTCEndpoint.class);
 
-	@Autowired
-	private NextRTCServer server;
+	private String id = UUID.randomUUID().toString();
+
+	private static Set<NextRTCEndpoint> endpoints = Sets.newConcurrentHashSet();
 
 	public NextRTCEndpoint() {
-		WebApplicationContext ctx = ContextLoader.getCurrentWebApplicationContext();
-		if (ctx != null) {
-			server = ctx.getBean(NextRTCServer.class);
+		endpoints.add(this);
+		log.info("Created " + this);
+		for (NextRTCEndpoint endpoint : endpoints) {
+			if (endpoint.server != null) {
+				this.setServer(endpoint.server);
+				break;
+			}
 		}
+	}
+
+	public static Set<NextRTCEndpoint> getEndpoints() {
+		return endpoints;
+	}
+
+	private NextRTCServer server;
+
+	@Autowired
+	public void setServer(NextRTCServer server) {
+		log.info("Setted server: " + server + " to " + this);
+		this.server = server;
 	}
 
 	@OnOpen
 	public void onOpen(Session session, EndpointConfig config) {
+		log.info("Opening " + server + " in " + this);
 		log.debug("Opening: " + session.getId());
 		server.register(session);
 	}
@@ -55,5 +70,10 @@ public class NextRTCEndpoint {
 				.withContent(t.getMessage())//
 				.build());
 		server.unregister(session);
+	}
+
+	@Override
+	public String toString() {
+		return "NextRTCEndpoint (" + id + ")";
 	}
 }
