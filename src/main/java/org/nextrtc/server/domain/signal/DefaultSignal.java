@@ -3,10 +3,7 @@ package org.nextrtc.server.domain.signal;
 import static org.springframework.util.StringUtils.isEmpty;
 
 import org.nextrtc.server.dao.Conversations;
-import org.nextrtc.server.domain.Conversation;
-import org.nextrtc.server.domain.Member;
-import org.nextrtc.server.domain.Message;
-import org.nextrtc.server.domain.RequestContext;
+import org.nextrtc.server.domain.*;
 import org.nextrtc.server.exception.ConversationExists;
 import org.nextrtc.server.exception.ConversationNotFoundException;
 import org.nextrtc.server.factory.ConversationFactory;
@@ -55,8 +52,7 @@ public enum DefaultSignal implements Signal {
 			String conversationId = message.getContent();
 			Conversations conversations = requestContext.getConversations();
 
-			ConversationFactory factory = requestContext.getConversationFactoryResolver().getDefaultOrBy(
-					message.getType());
+			ConversationFactory factory = requestContext.getConversationFactoryResolver().getDefaultOrBy(message.getType());
 			if (isEmpty(conversationId)) {
 				return factory.create();
 			} else if (conversations.findBy(conversationId).isPresent() == false) {
@@ -110,8 +106,8 @@ public enum DefaultSignal implements Signal {
 	},
 
 	/**
-	 * After creating local peer, and connect local media each requested
-	 * member send their offer to server<br>
+	 * After creating local peer, and connect local media each requested member
+	 * send their offer to server<br>
 	 * 
 	 * Alice -> server<br>
 	 * 
@@ -144,8 +140,8 @@ public enum DefaultSignal implements Signal {
 	},
 
 	/**
-	 * After creating local peer, and connect local media, Bob replay for
-	 * offer and send the reply to server <br>
+	 * After creating local peer, and connect local media, Bob replay for offer
+	 * and send the reply to server <br>
 	 * 
 	 * Bob -> server<br>
 	 * 
@@ -172,6 +168,30 @@ public enum DefaultSignal implements Signal {
 			Conversation conversation = getConversation(member, requestContext);
 
 			return conversation.routeAnswer(member, message);
+		}
+	},
+
+	ping {
+		@Override
+		public SignalResponse execute(Member member, Message message, RequestContext requestContext) {
+			return new SignalResponse(Message//
+					.createWith(ping)//
+					.withMember(member)//
+					.build(), member);
+		}
+	},
+
+	candidate {
+		@Override
+		public SignalResponse execute(Member member, Message message, RequestContext requestContext) {
+			logRequest(message, member);
+
+			Member requestedMember = requestContext.getMembers().findBy(message.getMemberId()).get();
+			return new SignalResponse(//
+					Message.createWith(candidate)//
+							.withMember(member)//
+							.withContent(message.getContent())//
+							.build(), requestedMember);
 		}
 	},
 
@@ -225,7 +245,8 @@ public enum DefaultSignal implements Signal {
 	}
 
 	protected void logRequest(Message message, Member member) {
-		SignalRegistry.log.debug(String.format("Executing: %s (%s) for %s", this.name(), message, member));
+		// SignalRegistry.log.debug(String.format("Executing: %s (%s) for %s",
+		// this.name(), message, member));
 	}
 
 	protected Conversation getConversation(Member member, RequestContext requestContext) {

@@ -39,7 +39,6 @@ public class MessageDecoder implements Decoder.Text<Message> {
 	@SuppressWarnings("unchecked")
 	public boolean willDecode(String json) {
 		json = json.replace("\"", "'");
-		log.debug(String.format("Request: %s", json));
 
 		try {
 			Map<String, String> object = gson.fromJson(json, Map.class);

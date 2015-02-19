@@ -5,12 +5,16 @@ import static org.nextrtc.server.domain.signal.DefaultSignal.left;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 import javax.websocket.Session;
 
 import org.apache.log4j.Logger;
 import org.nextrtc.server.dao.Conversations;
 import org.nextrtc.server.dao.Members;
+import org.nextrtc.server.domain.signal.DefaultSignal;
 import org.nextrtc.server.domain.signal.SenderRequest;
 import org.nextrtc.server.domain.signal.SignalResponse;
 import org.nextrtc.server.exception.MemberNotFoundException;
@@ -47,6 +51,8 @@ public class NextRTCServer {
 	@Autowired
 	private MemberFactory memberFactory;
 
+	private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(5);
+
 	private final BiMap<Session, String> memberSession = Maps.synchronizedBiMap(//
 			HashBiMap.<Session, String> create());
 
@@ -54,7 +60,7 @@ public class NextRTCServer {
 		bindSessionToMember(session, memberFactory.create());
 	}
 
-	public void handle(Message message, Session session) {
+	public synchronized void handle(Message message, Session session) {
 		Member member = getMemberBy(session);
 
 		SignalResponse messages = execute(message, member);
@@ -83,13 +89,34 @@ public class NextRTCServer {
 		throw new MemberNotFoundException();
 	}
 
+	private static class Ping implements Runnable {
+
+		private MessageSender sender;
+		private SenderRequest req;
+
+		private Ping(MessageSender sender, SenderRequest req) {
+			this.sender = sender;
+			this.req = req;
+		}
+
+		@Override
+		public void run() {
+			sender.send(req);
+		}
+	}
+
 	private void bindSessionToMember(Session session, Member member) {
 		members.save(member);
 		log.debug("New member: " + member + " has been created and bind to session: " + session.getId());
+		session.setMaxIdleTimeout(1000 * 6);
 		memberSession.put(session, member.getId());
+		SenderRequest req = new SenderRequest();
+		req.add(Message.createWith(DefaultSignal.ping).build(), session);
+		scheduler.scheduleAtFixedRate(new Ping(messageSender, req), 5, 5, TimeUnit.SECONDS);
 	}
 
 	private SignalResponse execute(Message message, Member member) {
+		log.debug("RECV: " + message + " FROM: " + memberSession.inverse().get(member.getId()).getId());
 		SignalResponse messages = message.getSignal().execute(//
 				member,//
 				message,//
@@ -101,8 +128,8 @@ public class NextRTCServer {
 	private SenderRequest transform(SignalResponse response) {
 		SenderRequest request = new SenderRequest();
 		Map<Message, List<Member>> recipients = response.getRecipients();
-		for(Message message : recipients.keySet()){
-			for(Member recipient : recipients.get(message)){
+		for (Message message : recipients.keySet()) {
+			for (Member recipient : recipients.get(message)) {
 				request.add(message, memberSession.inverse().get(recipient.getId()));
 			}
 		}
