@@ -206,5 +206,5 @@ var error = function(error) {
 };
 
 var success = function(success) {
-	console.log('success ' + JSON.stringify(success));
+	// dummy success function
 };
