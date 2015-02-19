@@ -136,6 +136,7 @@ function NextRTC(config) {
 
 	this.answerResponse = function(nextRTC, signal) {
 		var pc = nextRTC.preparePeerConnection(nextRTC, signal.member);
+		pc['pc'].addStream(nextRTC.localStream);
 		pc['pc'].setRemoteDescription(new RTCSessionDescription({
 			type : 'offer',
 			sdp : signal.content
